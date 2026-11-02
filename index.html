@@ -1413,29 +1413,94 @@ function book(){
   sheetTop();
 }
 
-/* ---------- cover: game title screen ---------- */
+/* ---------- cover: animated title screen (book-cover style) ---------- */
+const COVER_SLIDES=[['s0','動物教我的道理'],['s1','飛禽走獸說故事'],['s2','看清真相的智慧'],['s3','神奇的古代傳說'],['s4','古人這樣讀書'],['s5','戰國英雄的膽識'],['s6','寓言裡的大道理'],['s7','魏晉南北朝人物']];
+const COVER_MASC=[['qilin','麒麟'],['phoenix','鳳凰'],['tiger','小老虎'],['raccoon','小貉'],['dogrb','小狗追兔'],['birds','雎鳩']];
 function cover(){
   stopAll(); SND.setMode('map'); W3.map(heroOf(S.hero),0);
-  const H=CHAPTERS.filter(c=>c.line==='history'), I=CHAPTERS.filter(c=>c.line==='island');
+  const H=CHAPTERS.filter(c=>c.line==='history').length, I=CHAPTERS.filter(c=>c.line==='island').length;
   const n=CHAPTERS.reduce((a,c)=>a+c.stops.length,0), got=CHAPTERS.reduce((a,c)=>a+c.stops.filter(l=>anyStars(l.id)).length,0);
-  hud.innerHTML=`<div class="l"><span class="chip">成語原來是這樣來的</span></div><div class="r">${musicChip()}</div>`; bindMusic();
-  ui.innerHTML=`<div class="intro" style="gap:12px">
-    <span class="eyebrow" style="color:#b8442f">Dr. Yuan．成語有聲漫畫</span>
-    <h2 style="font-size:28px;line-height:1.3">成語原來是這樣來的<br><span style="font-size:20px">時空冒險闖關遊戲</span></h2>
-    <p>穿越回古代，親眼看成語背後的故事！每一站先演一段歷史或寓言，故事走到關鍵時刻，換你選出最適合的成語。</p>
-    <div class="ppl">
-      <div><b>時空冒險</b>${H.length} 章．從周朝到清朝，照年代一路闖關</div>
-      <div><b>成語寓言島</b>${I.length} 島．寓言、神話與經典名句</div>
-      <div><b>${n} 個成語</b>每個都有四格漫畫與朗讀</div>
-      <div><b>三種玩法</b>闖關冒險、計時競賽、多人 PK</div>
-    </div>
-    <p class="label" style="color:#7a6a4a">怎麼玩</p>
-    <p>① 看故事 → ② 選成語 → ③ 聽小講堂、收集成語卡。答對越多星星越多，還能賺銅錢買道具。</p>
-    ${got?`<p class="small">你已經收集 ${got} / ${n} 張成語卡。</p>`:''}
-  </div>
-  <button class="btn wide" id="cvgo">${got?'繼續冒險':'開始冒險'}</button>`;
-  document.getElementById('cvgo').onclick=()=>{ SND.tap(); if(!S.seen[CH.key]&&CH.intro) chapterIntro(); else home(); };
-  sheetShow(); sheetTop();
+  hud.innerHTML=''; ui.innerHTML='';
+  const old=document.getElementById('ttl'); if(old) old.remove();
+  const T1='成語原來是', T2='這樣來的';
+  const letters=(t,o)=>[...t].map((c,i)=>`<span style="animation-delay:${(o+i)*.08+.2}s">${c}</span>`).join('');
+  const el=document.createElement('div'); el.id='ttl';
+  el.innerHTML=`<style>
+#ttl{position:fixed;inset:0;z-index:60;overflow:hidden;background:linear-gradient(#FFF6E3 0%,#FBEFD6 62%,#F4E2BC 100%);color:#2E2620;font-family:var(--f-display);display:flex;flex-direction:column;align-items:center;transition:opacity .5s,transform .5s}
+#ttl.out{opacity:0;transform:scale(1.06)}
+#ttl .sun{position:absolute;top:-90px;right:-90px;width:300px;height:300px;border-radius:50%;background:radial-gradient(#FFE27A 0 30%,transparent 31%),repeating-conic-gradient(rgba(255,214,90,.35) 0 9deg,transparent 9deg 18deg);animation:tSpin 40s linear infinite}
+#ttl .cl{position:absolute;height:40px;width:120px;background:#fff;border-radius:40px;opacity:.95;box-shadow:30px -14px 0 4px #fff,62px 0 0 -2px #fff;animation:tDrift linear infinite}
+#ttl .bird{position:absolute;width:26px;height:12px;animation:tFly linear infinite}
+#ttl .bird:before,#ttl .bird:after{content:"";position:absolute;top:0;width:13px;height:10px;border-top:3px solid #6b5a48;border-radius:50% 50% 0 0;animation:tFlap .5s ease-in-out infinite alternate}
+#ttl .bird:before{left:0;transform-origin:right bottom}#ttl .bird:after{right:0;transform-origin:left bottom}
+#ttl header{position:relative;z-index:3;text-align:center;margin-top:calc(14px + env(safe-area-inset-top,0px))}
+#ttl .tag{display:inline-block;background:#D9584A;color:#fff;font-size:13px;padding:3px 14px;border-radius:99px;letter-spacing:.1em;animation:tPop .5s .1s both}
+#ttl h1{font-size:min(9vw,7.2vh,70px);font-weight:900;line-height:1.08;margin:6px 0 0;letter-spacing:.04em;color:#3a2a1e;paint-order:stroke fill;-webkit-text-stroke:7px #fff;text-shadow:0 5px 0 rgba(217,88,74,.35)}
+#ttl h1 span{display:inline-block;animation:tDrop .7s cubic-bezier(.3,1.6,.5,1) both}
+#ttl h1 .row{display:block}
+#ttl h1 .row:hover span{animation:tWig .5s}
+#ttl .rib{display:inline-block;margin-top:8px;background:#FFE27A;border:3px solid #2E2620;border-radius:40px;padding:4px 22px;font-size:clamp(17px,4vw,24px);font-weight:900;box-shadow:0 4px 0 #2E2620;animation:tPop .6s 1.2s both}
+#ttl .stage{position:relative;z-index:2;flex:1;margin-top:10px;width:min(92vw,620px);display:flex;align-items:center;justify-content:center;min-height:0}
+#ttl .book{position:relative;width:min(78vw,430px,38vh);aspect-ratio:16/14.4;border:5px solid #fff;border-radius:22px;box-shadow:0 0 0 3px #2E2620,0 12px 0 3px #2E2620;overflow:hidden;background:#fff;animation:tPop .7s 1.4s both, tBob 4s 2.2s ease-in-out infinite}
+#ttl .book img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s}
+#ttl .book img.on{opacity:1;animation:tKen 5s linear both}
+#ttl .cap{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);background:#fff;border:3px solid #2E2620;border-radius:12px;padding:3px 14px;font-size:15px;font-weight:900;white-space:nowrap;z-index:3;animation:tPop .5s 1.8s both}
+#ttl .m{position:absolute;width:clamp(64px,15vw,104px);aspect-ratio:1;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 3px #2E2620,0 6px 0 3px #2E2620;background-size:cover;background-position:center;cursor:pointer;animation:tPop .5s both, tHop 2.4s ease-in-out infinite}
+#ttl .m.wig{animation:tSpinOnce .6s}
+#ttl .m b{position:absolute;left:50%;bottom:-14px;transform:translateX(-50%);background:#2E2620;color:#fff;font-size:11px;padding:1px 8px;border-radius:9px;white-space:nowrap}
+#ttl .cta{position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;gap:8px;margin:30px 0 calc(122px + env(safe-area-inset-bottom,0px))}
+#ttl .go{font-family:var(--f-display);font-size:clamp(24px,5.5vw,32px);font-weight:900;color:#fff;background:linear-gradient(#F07A5E,#D9584A);border:4px solid #2E2620;border-radius:60px;padding:10px 42px;box-shadow:0 7px 0 #2E2620;cursor:pointer;animation:tPop .6s 1.9s both, tPulse 1.6s 2.5s ease-in-out infinite}
+#ttl .go:active{transform:translateY(5px);box-shadow:0 2px 0 #2E2620}
+#ttl .chips{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;animation:tPop .5s 2.1s both}
+#ttl .chips span{background:#fff;border:2px solid #2E2620;border-radius:99px;padding:2px 10px;font-size:13px;font-weight:700}
+#ttl .pano{position:absolute;left:0;right:0;bottom:0;height:130px;background:url(img/cover/pano.jpg) repeat-x 0 0/auto 130px;animation:tPan 120s linear infinite;z-index:1}
+#ttl .pano:before{content:"";position:absolute;inset:0 0 auto 0;height:26px;background:linear-gradient(#F4E2BC,rgba(244,226,188,0))}
+#ttl .spark{position:absolute;color:#F6C445;font-size:20px;animation:tTw 1.8s ease-in-out infinite;z-index:2}
+@keyframes tSpin{to{transform:rotate(360deg)}}
+@keyframes tDrift{from{transform:translateX(-200px)}to{transform:translateX(110vw)}}
+@keyframes tFly{from{transform:translate(-60px,0)}50%{transform:translate(55vw,-30px)}to{transform:translate(110vw,10px)}}
+@keyframes tFlap{from{transform:rotate(-14deg)}to{transform:rotate(18deg)}}
+@keyframes tDrop{0%{opacity:0;transform:translateY(-120px) rotate(-20deg)}100%{opacity:1;transform:none}}
+@keyframes tPop{0%{opacity:0;transform:scale(.3)}70%{transform:scale(1.08)}100%{opacity:1;transform:scale(1)}}
+@keyframes tWig{0%,100%{transform:none}30%{transform:rotate(-10deg) scale(1.15)}60%{transform:rotate(8deg)}}
+@keyframes tBob{0%,100%{transform:translateY(0) rotate(-1deg)}50%{transform:translateY(-8px) rotate(1deg)}}
+@keyframes tKen{from{transform:scale(1.02)}to{transform:scale(1.14) translate(-2%,-2%)}}
+@keyframes tHop{0%,100%{transform:translateY(0)}20%{transform:translateY(-16px) rotate(-6deg)}35%{transform:translateY(0) scaleY(.92)}45%{transform:none}}
+@keyframes tSpinOnce{to{transform:rotate(360deg) scale(1.1)}}
+@keyframes tPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes tPan{from{background-position:0 0}to{background-position:-7688px 0}}
+@keyframes tTw{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.1) rotate(90deg)}}
+@media (max-width:600px){#ttl .m{width:56px;border-width:3px}#ttl .m b{font-size:10px;bottom:-12px}}
+@media (prefers-reduced-motion:reduce){#ttl *{animation-duration:.01s!important;animation-iteration-count:1!important}}
+</style>
+<div class="sun"></div>
+<div class="cl" style="top:12%;animation-duration:46s;animation-delay:-10s"></div>
+<div class="cl" style="top:30%;transform:scale(.7);animation-duration:62s;animation-delay:-38s"></div>
+<div class="cl" style="top:52%;animation-duration:54s;animation-delay:-25s;opacity:.8"></div>
+<div class="bird" style="top:18%;animation-duration:19s"></div><div class="bird" style="top:22%;animation-duration:19s;animation-delay:-.6s;margin-left:30px"></div><div class="bird" style="top:40%;animation-duration:27s;animation-delay:-9s"></div>
+<header><span class="tag">Dr. Yuan．成語有聲漫畫</span>
+<h1><span class="row">${letters(T1,0)}</span><span class="row">${letters(T2,5)}</span></h1>
+<span class="rib">時空冒險闖關遊戲</span></header>
+<div class="stage" id="tstage"><div class="book" id="tbook">${COVER_SLIDES.map(([f],i)=>`<img src="img/cover/${f}.jpg" alt="" ${i?'loading="lazy"':''}>`).join('')}<span class="cap" id="tcap"></span></div></div>
+<div class="cta"><button class="go" id="tgo">${got?'繼續冒險':'開始冒險'} ▶</button>
+<div class="chips"><span>時空冒險 ${H} 章</span><span>寓言島 ${I} 島</span><span>${n} 個成語</span>${got?`<span>已收集 ${got} 張</span>`:''}</div></div>
+<div class="pano"></div>`;
+  document.body.appendChild(el);
+  // mascots around the book
+  const st=el.querySelector('#tstage'), pos=[[7,12],[93,8],[5,52],[95,48],[15,90],[85,92]];
+  COVER_MASC.forEach(([k,nm],i)=>{ const m=document.createElement('div'); m.className='m'; m.style.backgroundImage=`url(img/cover/m_${k}.jpg)`;
+    m.style.left=pos[i][0]+'%'; m.style.top=pos[i][1]+'%'; m.style.translate='-50% -50%'; m.style.animationDelay=`${1.6+i*.15}s, ${2.2+i*.37}s`; m.innerHTML=`<b>${nm}</b>`;
+    m.onclick=()=>{ SND.resume&&SND.resume(); SND.coin&&SND.coin(); m.classList.remove('wig'); void m.offsetWidth; m.classList.add('wig'); setTimeout(()=>m.classList.remove('wig'),650); };
+    st.appendChild(m); });
+  // sparkles
+  for(let i=0;i<7;i++){ const s=document.createElement('span'); s.className='spark'; s.textContent='✦'; s.style.left=(8+Math.random()*84)+'%'; s.style.top=(14+Math.random()*60)+'%'; s.style.animationDelay=(Math.random()*2)+'s'; el.appendChild(s); }
+  // slideshow
+  const imgs=[...el.querySelectorAll('#tbook img')], cap=el.querySelector('#tcap'); let k=0;
+  const show=()=>{ imgs.forEach((im,i)=>im.classList.toggle('on',i===k)); cap.textContent=COVER_SLIDES[k][1]; };
+  show(); const timer=setInterval(()=>{ k=(k+1)%imgs.length; show(); },4200);
+  el.querySelector('h1').onclick=()=>{ SND.tap(); el.querySelectorAll('h1 span span').forEach((x,i)=>{ x.style.animation='none'; void x.offsetWidth; x.style.animation=`tWig .5s ${i*.05}s`; }); };
+  el.querySelector('#tgo').onclick=()=>{ SND.resume&&SND.resume(); SND.warp?SND.warp():SND.tap(); clearInterval(timer); el.classList.add('out');
+    setTimeout(()=>{ el.remove(); if(!S.seen[CH.key]&&CH.intro) chapterIntro(); else home(); },480); };
 }
 
 cover();
