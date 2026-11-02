@@ -1508,7 +1508,7 @@ function cover(){
     m.onclick=e=>{ e.stopPropagation(); SND.resume&&SND.resume(); SND.coin&&SND.coin(); const r=m.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2);
       m.classList.remove('wig'); void m.offsetWidth; m.classList.add('wig'); setTimeout(()=>m.classList.remove('wig'),650); }; return m; };
   const slots=pos.map((p,i)=>{ const m=mk(true); setM(m,nextM()); m.style.left=p[0]+'%'; m.style.top=p[1]+'%'; if(i>5) m.classList.add('xw'); m.style.translate='-50% -50%'; m.style.animationDelay=`${1.6+i*.15}s, ${2.2+i*.37}s`; st.appendChild(m); return m; });
-  let si=0; const swap=setInterval(()=>{ const vis=slots.filter(x=>x.offsetParent); const m=vis[si%vis.length]; si+=Math.random()<.5?1:2; m.classList.remove('pop'); void m.offsetWidth; setM(m,nextM()); m.classList.add('pop'); },1800);
+  let si=0; const swap=setInterval(()=>{ if(!el.isConnected){ clearInterval(swap); return; } const vis=slots.filter(x=>x.offsetParent); if(!vis.length) return; const m=vis[si%vis.length]; si+=Math.random()<.5?1:2; m.classList.remove('pop'); void m.offsetWidth; setM(m,nextM()); m.classList.add('pop'); },1800);
   [[17,0],[23,-8],[20,-14],[26,-4]].forEach(([d,dl])=>{ const w=document.createElement('div'); w.className='walk'; w.style.animationDuration=d+'s'; w.style.animationDelay=dl+'s';
     const m=mk(false); m.style.animationDelay=(Math.random()*.7)+'s'; setM(m,nextM()); w.appendChild(m); w.addEventListener('animationiteration',()=>setM(m,nextM())); el.appendChild(w); });
   for(let i=0;i<10;i++){ const p=document.createElement('i'); p.className='pet'; p.style.left=(Math.random()*100)+'%'; p.style.animationDuration=(9+Math.random()*8)+'s'; p.style.animationDelay=(-Math.random()*15)+'s'; el.appendChild(p); }

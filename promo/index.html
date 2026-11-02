@@ -1,0 +1,351 @@
+<!doctype html><html lang="zh-Hant"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"></head><body><title>成語時空冒險</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="穿越回古代，看故事、選成語、收集成語卡。480 個成語、61 個章節，免費、免安裝，手機平板電腦都能玩。">
+<meta property="og:title" content="成語原來是這樣來的．時空冒險闖關遊戲">
+<meta property="og:description" content="穿越回古代，看故事、選成語！480 個成語、61 個章節，免費免安裝。">
+<meta property="og:image" content="https://yuan0520.github.io/chengyu-game/promo/img/s0.jpg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
+<style>
+/* 繪本封面風：米色紙底、粗墨線貼紙框、紅黃兩色；一頁長卷，每一段像繪本的一個跨頁 */
+:root{
+  --paper:#FFF6E3; --paper2:#FBEBCB; --ink:#2E2620; --mute:#6F6052;
+  --red:#D9584A; --yel:#FFE27A; --sky:#CFE8F3; --leaf:#7DBB6A; --card:#FFFFFF;
+  --f-show:"LXGW WenKai TC","Kaiti TC","STKaiti","KaiTi",serif;
+  --f-body:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--f-body);font-size:17px;line-height:1.75}
+img{max-width:100%;display:block}
+a{color:inherit}
+.wrap{max-width:1080px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-show);font-weight:700;line-height:1.25;margin:0;text-wrap:balance}
+h2{font-size:clamp(28px,5vw,42px)}
+h3{font-size:22px}
+p{margin:0}
+.eyebrow{display:inline-block;font-size:14px;font-weight:700;letter-spacing:.12em;color:#fff;background:var(--red);border-radius:99px;padding:3px 14px}
+.stk{background:var(--card);border:3px solid var(--ink);border-radius:20px;box-shadow:0 6px 0 var(--ink)}
+.btn{display:inline-flex;align-items:center;gap:8px;font-family:var(--f-show);font-weight:700;font-size:clamp(20px,4vw,26px);text-decoration:none;color:#fff;background:var(--red);border:3px solid var(--ink);border-radius:60px;padding:10px 34px;box-shadow:0 6px 0 var(--ink);transition:transform .12s, box-shadow .12s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 8px 0 var(--ink)}
+.btn:active{transform:translateY(4px);box-shadow:0 2px 0 var(--ink)}
+.btn.alt{background:var(--yel);color:var(--ink)}
+.btn:focus-visible,button:focus-visible{outline:3px solid #3E6FA8;outline-offset:3px}
+section{padding-block:64px}
+.lead{max-width:40em;color:var(--mute);margin-top:10px}
+
+/* hero */
+.hero{position:relative;overflow:hidden;background:linear-gradient(var(--paper) 0%,var(--paper2) 100%);padding-block:40px 150px}
+.hero .wrap{display:grid;grid-template-columns:1.05fr 1fr;gap:36px;align-items:center;position:relative;z-index:2}
+.hero h1{font-size:clamp(42px,7.4vw,78px);letter-spacing:.03em;paint-order:stroke fill;-webkit-text-stroke:6px #fff;text-shadow:0 5px 0 rgba(217,88,74,.35);margin-top:12px}
+.hero h1 span{display:block}
+.rib{display:inline-block;margin-top:12px;background:var(--yel);border:3px solid var(--ink);border-radius:40px;padding:3px 20px;font-family:var(--f-show);font-weight:700;font-size:clamp(18px,3.4vw,24px);box-shadow:0 4px 0 var(--ink)}
+.hero p.big{font-size:clamp(17px,2.4vw,20px);margin-top:18px;max-width:28em}
+.cta{display:flex;gap:14px;flex-wrap:wrap;margin-top:26px;align-items:center}
+.facts{display:flex;gap:8px;flex-wrap:wrap;margin-top:18px}
+.facts span{background:#fff;border:2px solid var(--ink);border-radius:99px;padding:1px 12px;font-size:14px;font-weight:700}
+.shot{position:relative}
+.shot .frame{aspect-ratio:16/14;overflow:hidden;transform:rotate(1.5deg)}
+.shot .frame img{width:100%;height:100%;object-fit:cover;opacity:0;position:absolute;inset:0;transition:opacity .9s}
+.shot .frame img.on{opacity:1}
+.shot .frame{position:relative}
+.m{position:absolute;width:86px;aspect-ratio:1;border-radius:50%;border:4px solid #fff;box-shadow:0 0 0 3px var(--ink),0 5px 0 3px var(--ink);background:#fff center/cover;animation:hop 2.6s ease-in-out infinite;z-index:3}
+.sun{position:absolute;top:-110px;right:-110px;width:320px;height:320px;border-radius:50%;background:radial-gradient(#FFE27A 0 30%,transparent 31%),repeating-conic-gradient(rgba(255,214,90,.35) 0 9deg,transparent 9deg 18deg);animation:spin 50s linear infinite;z-index:1}
+.pano{position:absolute;left:0;right:0;bottom:0;height:130px;background:url(img/pano.jpg) repeat-x 0 0/auto 130px;animation:pan 120s linear infinite}
+.walk{position:absolute;bottom:14px;left:0;z-index:3;animation:walk linear infinite}
+.walk .m{position:relative;width:64px;animation:hop2 .7s ease-in-out infinite}
+@keyframes hop{0%,100%{transform:translateY(0)}20%{transform:translateY(-14px) rotate(-6deg)}38%{transform:translateY(0) scaleY(.93)}48%{transform:none}}
+@keyframes hop2{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-12px) rotate(4deg)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pan{to{background-position:-7688px 0}}
+@keyframes walk{from{transform:translateX(-90px)}to{transform:translateX(calc(100vw + 90px))}}
+
+/* how to play */
+.steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;margin-top:34px}
+.step{padding:14px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.step img{border-radius:12px;border:2px solid var(--ink);aspect-ratio:16/10;object-fit:cover;object-position:right center;width:100%}
+.step .n{font-family:var(--f-show);font-weight:700;font-size:15px;color:var(--red)}
+.step p{font-size:15.5px;color:var(--mute)}
+.arrow{font-family:var(--f-show);font-size:15px}
+
+/* two routes */
+.band{background:var(--sky);border-block:3px solid var(--ink)}
+.routes{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:34px}
+.route{overflow:hidden}
+.route img{aspect-ratio:16/9;object-fit:cover;width:100%;border-bottom:3px solid var(--ink)}
+.route .body{padding:18px 20px 22px;display:flex;flex-direction:column;gap:8px}
+.route .num{font-family:var(--f-show);font-size:44px;font-weight:700;line-height:1;color:var(--red)}
+.route .num small{font-size:20px;color:var(--ink);margin-left:4px}
+.route ul{margin:4px 0 0;padding-left:1.2em;color:var(--mute);font-size:15.5px}
+
+/* features */
+.feats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;margin-top:34px}
+.feat{padding:18px 18px 20px;display:flex;flex-direction:column;gap:6px}
+.feat .ic{width:52px;height:52px;border-radius:14px;border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--f-show);font-weight:700;font-size:24px}
+.feat p{font-size:15.5px;color:var(--mute)}
+.diff{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.diff span{font-size:13px;border:2px solid var(--ink);border-radius:8px;padding:0 8px;background:var(--paper)}
+
+/* idiom card sample */
+.sample{display:grid;grid-template-columns:1.1fr 1fr;gap:30px;align-items:center;margin-top:34px}
+.card{padding:22px 24px;background:#FFFDF6;position:relative}
+.card .w{font-family:var(--f-show);font-size:44px;font-weight:700;letter-spacing:.2em}
+.card .zy{font-size:13px;color:var(--mute);letter-spacing:.3em}
+.card dl{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;margin:14px 0 0;font-size:15.5px}
+.card dt{color:var(--red);font-weight:700}
+.card dd{margin:0}
+.card .stamp{position:absolute;top:18px;right:18px;border:2px solid var(--red);color:var(--red);font-family:var(--f-show);font-weight:700;font-size:14px;padding:2px 6px;border-radius:6px;transform:rotate(8deg)}
+
+/* parents */
+.parents{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin-top:30px}
+.parents div{padding:18px 20px;min-width:0}
+.parents b{font-family:var(--f-show);font-size:20px;display:block;margin-bottom:4px}
+.parents p{font-size:15.5px;color:var(--mute)}
+
+/* books */
+.books{display:flex;gap:16px;overflow-x:auto;padding:10px 4px 18px;margin-top:28px;scroll-snap-type:x mandatory}
+.books img{width:150px;flex:none;border:3px solid var(--ink);border-radius:10px;box-shadow:0 5px 0 var(--ink);scroll-snap-align:start}
+
+/* share */
+.share{display:grid;grid-template-columns:260px 1fr;gap:30px;margin-top:30px;align-items:start}
+.qr{padding:16px;text-align:center}
+.qr img{margin:0 auto;width:200px}
+.qr p{font-size:14px;color:var(--mute);margin-top:6px}
+.urlrow{display:flex;gap:8px;margin-top:10px}
+.urlrow input{flex:1;min-width:0;font:inherit;font-size:14px;border:2px solid var(--ink);border-radius:10px;padding:6px 10px;background:#fff;color:var(--ink)}
+.posts{display:flex;flex-direction:column;gap:16px;min-width:0}
+.post{padding:16px 18px;min-width:0}
+.post header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.post header b{font-family:var(--f-show);font-size:19px}
+.post pre{white-space:pre-wrap;word-break:break-word;font-family:var(--f-body);font-size:15px;line-height:1.7;margin:10px 0 0;background:var(--paper);border-radius:12px;padding:12px 14px;border:2px dashed #CDBB9C}
+.copy{font:inherit;font-size:14px;font-weight:700;background:var(--yel);color:var(--ink);border:2px solid var(--ink);border-radius:99px;padding:3px 14px;cursor:pointer;box-shadow:0 3px 0 var(--ink)}
+.copy:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+footer{background:var(--ink);color:#F5E9D3;padding-block:34px;font-size:14px}
+footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:center}
+footer b{font-family:var(--f-show);font-size:20px;color:#fff}
+.final{text-align:center}
+.final .cta{justify-content:center}
+
+@media (max-width:860px){
+  .hero .wrap,.sample,.share{grid-template-columns:1fr}
+  .steps,.feats{grid-template-columns:1fr 1fr}
+  .routes{grid-template-columns:1fr}
+  .m{width:62px}
+  .share .qr{max-width:300px}
+}
+@media (max-width:560px){
+  .steps,.feats,.parents{grid-template-columns:1fr}
+  section{padding-block:48px}
+  .card .w{font-size:36px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+<header class="hero">
+  <div class="sun" aria-hidden="true"></div>
+  <div class="wrap">
+    <div>
+      <span class="eyebrow">Dr. Yuan．成語有聲漫畫</span>
+      <h1><span>成語原來是</span><span>這樣來的</span></h1>
+      <span class="rib">時空冒險闖關遊戲</span>
+      <p class="big">穿越回古代，親眼看見「狐假虎威」「破釜沉舟」是怎麼發生的！故事走到關鍵時刻，換你選出最適合的成語，答對就能收集成語卡。</p>
+      <div class="cta">
+        <a class="btn" href="https://yuan0520.github.io/chengyu-game/" target="_blank" rel="noopener">免費開始玩 ▶</a>
+        <a class="btn alt" href="#how">怎麼玩？</a>
+      </div>
+      <div class="facts"><span>480 個成語</span><span>61 個章節</span><span>免費免安裝</span><span>手機・平板・電腦</span></div>
+    </div>
+    <div class="shot">
+      <div class="frame stk" id="slides">
+        <img class="on" src="img/s0.jpg" alt="遊戲插圖：狐狸和老虎走在森林裡">
+        <img src="img/s1.jpg" alt="遊戲插圖：畫龍點睛、仙鶴與小動物">
+        <img src="img/s3.jpg" alt="遊戲插圖：精衛鳥銜石填海">
+        <img src="img/s6.jpg" alt="遊戲插圖：寓言故事裡的人物">
+        <img src="img/s7.jpg" alt="遊戲插圖：麒麟與魏晉人物">
+      </div>
+      <div class="m" style="left:-24px;top:-18px;background-image:url(img/m_fox.jpg);animation-delay:.2s"></div>
+      <div class="m" style="right:-18px;top:30%;background-image:url(img/m_phoenix.jpg);animation-delay:.9s"></div>
+      <div class="m" style="left:8%;bottom:-30px;background-image:url(img/m_elephant.jpg);animation-delay:1.4s"></div>
+      <div class="m" style="right:12%;bottom:-34px;background-image:url(img/m_cub.jpg);animation-delay:.5s"></div>
+    </div>
+  </div>
+  <div class="pano" aria-hidden="true"></div>
+  <div class="walk" style="animation-duration:19s" aria-hidden="true"><div class="m" style="background-image:url(img/m_duck.jpg)"></div></div>
+  <div class="walk" style="animation-duration:25s;animation-delay:-9s" aria-hidden="true"><div class="m" style="background-image:url(img/m_dog.jpg)"></div></div>
+  <div class="walk" style="animation-duration:22s;animation-delay:-15s" aria-hidden="true"><div class="m" style="background-image:url(img/m_squirrel.jpg)"></div></div>
+</header>
+
+<main>
+<section id="how">
+  <div class="wrap">
+    <h2>三步驟，邊玩邊學成語</h2>
+    <p class="lead">每一站都是一段真實的歷史或寓言。先看故事，再用成語解決問題，最後聽一段小講堂，把成語的來歷和用法記起來。</p>
+    <div class="steps">
+      <div class="step stk"><img src="img/story2.jpg" alt="遊戲畫面：3D 森林裡，狐狸對老虎說話"><span class="n">第一步</span><h3>看故事</h3><p>3D 場景裡，人物走動、對話，旁白一句一句念給你聽。這一站演的是〈狐假虎威〉。</p></div>
+      <div class="step stk"><img src="img/quiz.jpg" alt="遊戲畫面：四個成語選項"><span class="n">第二步</span><h3>選成語</h3><p>故事停在關鍵時刻，從四個成語裡挑出對的那一個。選錯了，故事人物會跳出來吐槽、告訴你差在哪。</p></div>
+      <div class="step stk"><img src="img/lesson.jpg" alt="遊戲畫面：答對後出現成語卡和小講堂"><span class="n">第三步</span><h3>收集成語卡</h3><p>答對就拿到成語卡：注音、出處、意思、用法、例句，還有四格漫畫和朗讀，一張一張收進「我的成語書」。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <h2>兩條冒險路線</h2>
+    <p class="lead">想照年代走一遍中國歷史，還是去寓言島聽動物講道理？兩條路線都能隨時切換。</p>
+    <div class="routes">
+      <article class="route stk">
+        <img src="img/map.jpg" alt="時空冒險的章節地圖">
+        <div class="body">
+          <div class="num">39<small>章</small></div>
+          <h3>時空冒險</h3>
+          <p>從周朝、春秋戰國、秦漢、三國，一路走到唐宋元明清。每章先介紹時代背景和重要人物，再一站一站闖關。</p>
+          <ul><li>春秋霸主、楚漢相爭、三顧茅廬</li><li>每站標出年代和地點，看得到歷史的先後</li></ul>
+        </div>
+      </article>
+      <article class="route stk">
+        <img src="img/island.jpg" alt="成語寓言島的地圖">
+        <div class="body">
+          <div class="num">22<small>島</small></div>
+          <h3>成語寓言島</h3>
+          <p>《莊子》《韓非子》《論語》《孟子》《詩經》、孫子兵法和神話傳說，一座島一本書。</p>
+          <ul><li>守株待兔、狐假虎威、杯弓蛇影</li><li>經典名句配上生活小故事，一聽就懂</li></ul>
+        </div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>好玩的地方還有很多</h2>
+    <div class="feats">
+      <div class="feat stk"><span class="ic" style="background:var(--yel)">景</span><h3>3D 古代場景</h3><p>軍營、宮殿、竹林、江邊、雪地茅屋，人物和動物都會動。</p></div>
+      <div class="feat stk"><span class="ic" style="background:#F7C9C1">聲</span><h3>旁白朗讀</h3><p>故事和成語都有朗讀，還不太會認字的小朋友也能跟著玩。</p></div>
+      <div class="feat stk"><span class="ic" style="background:#CFE8F3">戰</span><h3>三種玩法</h3><p>闖關冒險、計時競賽，還有 2～4 人同一台裝置一起玩的多人 PK：輪流答題或搶答對決。</p></div>
+      <div class="feat stk"><span class="ic" style="background:#D8EDCB">級</span><h3>五種難度</h3><p>從入門到大師，選項數、提示和計時都不一樣。</p><div class="diff"><span>入門</span><span>簡單</span><span>普通</span><span>困難</span><span>大師</span></div></div>
+      <div class="feat stk"><span class="ic" style="background:#E7DDF6">寶</span><h3>道具與銅錢</h3><p>闖關賺銅錢，買錦囊、竹簡、護心鏡、虎符等 8 種道具，關鍵時刻幫你一把。</p></div>
+      <div class="feat stk"><span class="ic" style="background:var(--yel)">畫</span><h3>四格漫畫</h3><p>每個成語都配一則四格漫畫，和《成語原來是這樣來的》書裡同一套畫。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="background:var(--paper2)">
+  <div class="wrap">
+    <h2>每答對一題，就多一張成語卡</h2>
+    <div class="sample">
+      <div class="card stk">
+        <span class="stamp">成語卡</span>
+        <div class="w">狐假虎威</div>
+        <div class="zy">ㄏㄨˊ　ㄐㄧㄚˇ　ㄏㄨˇ　ㄨㄟ</div>
+        <dl>
+          <dt>出處</dt><dd>《戰國策．楚策一》</dd>
+          <dt>意思</dt><dd>比喻倚仗別人的勢力，來欺負或嚇唬人。</dd>
+          <dt>用法</dt><dd>貶義。例：他仗著哥哥是班長，就在班上狐假虎威。</dd>
+          <dt>小知識</dt><dd>「假」是借用的意思，不是真假的假。</dd>
+        </dl>
+      </div>
+      <div>
+        <p style="font-size:18px">遊戲裡的 480 個成語，全部來自《成語原來是這樣來的》60 集有聲漫畫。每張卡都整理好注音、出處、意思、用法和例句，玩過一輪，等於把整套書的成語都複習了一遍。</p>
+        <p style="margin-top:14px;color:var(--mute)">錯過的題目可以重玩，拿到三顆星才算真正學會。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <h2>給家長和老師</h2>
+    <div class="parents">
+      <div class="stk"><b>先懂故事，再記成語</b><p>成語不是死背的四個字。先看到典故怎麼發生，孩子自然記得意思，也知道什麼時候用。</p></div>
+      <div class="stk"><b>歷史順序一目了然</b><p>時空冒險照年代排列，每站標出年代和地點，順便把朝代先後串起來。</p></div>
+      <div class="stk"><b>適合課堂和全家一起玩</b><p>多人 PK 最多 4 人，用同一台平板或投影就能比賽，適合班級活動和親子時間。</p></div>
+      <div class="stk"><b>免費、免安裝、免登入</b><p>打開網址就能玩，手機、平板、電腦都可以。進度自動存在這台裝置上。</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="band" style="background:#FDE7DF">
+  <div class="wrap">
+    <h2>搭配書一起讀</h2>
+    <p class="lead">《成語原來是這樣來的》有聲漫畫共 60 集，每集 8 個成語，四格漫畫加朗讀，電子書陸續上架中。</p>
+    <div class="books" aria-label="書封">
+      <img src="img/book3.jpg" alt="第 3 集 看清真相的智慧"><img src="img/book4.jpg" alt="第 4 集 動物教我的道理"><img src="img/book6.jpg" alt="第 6 集 神奇的古代傳說"><img src="img/book15.jpg" alt="第 15 集 戰國英雄的膽識"><img src="img/book25.jpg" alt="第 25 集 莊子的奇妙寓言"><img src="img/book47.jpg" alt="第 47 集 寓言裡的大道理"><img src="img/book52.jpg" alt="第 52 集 孟子的大道理"><img src="img/book60.jpg" alt="第 60 集 魏晉南北朝人物">
+    </div>
+  </div>
+</section>
+
+<section id="share">
+  <div class="wrap">
+    <h2>分享給朋友</h2>
+    <p class="lead">掃 QR Code 或複製網址就能玩。下面也準備好了可以直接貼到 Facebook、LINE、Instagram 的文案。</p>
+    <div class="share">
+      <div class="qr stk">
+        <img src="img/qr.png" alt="遊戲網址的 QR Code">
+        <p>手機掃描，立刻開玩</p>
+        <div class="urlrow"><input id="url" readonly value="https://yuan0520.github.io/chengyu-game/" aria-label="遊戲網址"><button class="copy" data-copy="url">複製</button></div>
+      </div>
+      <div class="posts">
+        <div class="post stk"><header><b>Facebook 貼文</b><button class="copy" data-copy="p1">複製文案</button></header>
+<pre id="p1">【免費成語遊戲】讓孩子穿越回古代學成語！
+
+《成語原來是這樣來的．時空冒險闖關遊戲》上線了 🎉
+先看一段 3D 歷史故事，故事走到關鍵時刻，換孩子選出最適合的成語，答對就能收集成語卡。
+
+✔ 480 個成語、61 個章節
+✔ 時空冒險（周朝到清朝）＋成語寓言島（莊子、韓非子、論語⋯）
+✔ 旁白朗讀、四格漫畫、五種難度
+✔ 2～4 人多人 PK，全家、全班一起比
+✔ 免費、免安裝，手機平板電腦都能玩
+
+👉 https://yuan0520.github.io/chengyu-game/
+
+#成語 #親子共學 #國小國語 #免費學習遊戲 #成語原來是這樣來的</pre></div>
+        <div class="post stk"><header><b>LINE 訊息</b><button class="copy" data-copy="p2">複製文案</button></header>
+<pre id="p2">分享一個免費的成語遊戲給你～
+小朋友會穿越回古代看故事，再選出對的成語闖關，有朗讀和漫畫，480 個成語都在裡面。
+手機打開就能玩，不用下載：
+https://yuan0520.github.io/chengyu-game/</pre></div>
+        <div class="post stk"><header><b>Instagram 貼文</b><button class="copy" data-copy="p3">複製文案</button></header>
+<pre id="p3">狐假虎威的狐狸，原來是這樣騙過老虎的 🦊🐯
+穿越回古代，看故事、選成語、收集成語卡！
+480 個成語｜61 個章節｜免費免安裝
+連結在個人檔案 🔗
+
+#成語 #成語故事 #親子共學 #國小 #學習遊戲 #繪本風 #DrYuan</pre></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final band" style="background:var(--yel)">
+  <div class="wrap">
+    <h2>準備好穿越了嗎？</h2>
+    <p class="lead" style="margin-inline:auto;color:var(--ink)">打開網址，選一個章節，故事馬上開始。</p>
+    <div class="cta"><a class="btn" href="https://yuan0520.github.io/chengyu-game/" target="_blank" rel="noopener">免費開始玩 ▶</a></div>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><b>成語原來是這樣來的</b><br>時空冒險闖關遊戲．文圖 Dr. Yuan</div>
+    <div>遊戲網址：yuan0520.github.io/chengyu-game</div>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var imgs=[].slice.call(document.querySelectorAll('#slides img')), k=0;
+  setInterval(function(){ imgs[k].classList.remove('on'); k=(k+1)%imgs.length; imgs[k].classList.add('on'); },3800);
+  document.querySelectorAll('.copy').forEach(function(b){
+    b.addEventListener('click',function(){
+      var el=document.getElementById(b.dataset.copy), txt=el.value!==undefined&&el.tagName==='INPUT'?el.value:el.textContent, old=b.textContent;
+      var done=function(){ b.textContent='已複製'; setTimeout(function(){ b.textContent=old; },1600); };
+      var sel=function(){ var r=document.createRange(); r.selectNodeContents(el); var s=getSelection(); s.removeAllRanges(); s.addRange(r); if(el.select) el.select(); b.textContent='已選取，請按複製'; setTimeout(function(){ b.textContent=old; },2200); };
+      if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(txt).then(done,sel); } else sel();
+    });
+  });
+})();
+</script>
+</body></html>
