@@ -373,17 +373,23 @@ https://yuan0520.github.io/chengyu-game/</pre></div>
   var btn=document.getElementById('snd'), txt=document.getElementById('sndt'), voice=document.getElementById('voice'), lis=document.getElementById('listen');
   function init(){ if(ctx||!AC) return !!ctx; ctx=new AC(); master=ctx.createGain(); master.gain.value=.9; master.connect(ctx.destination);
     music=ctx.createGain(); music.gain.value=.0; music.connect(master);
-    var dl=ctx.createDelay(); dl.delayTime.value=.28; var fb=ctx.createGain(); fb.gain.value=.28; music.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(master); return true; }
+    var dl=ctx.createDelay(); dl.delayTime.value=.54; var fb=ctx.createGain(); fb.gain.value=.16; music.connect(dl); dl.connect(fb); fb.connect(dl); dl.connect(master); return true; }
   function pluck(f,t,dur,vol,dest){ var o=ctx.createOscillator(), o2=ctx.createOscillator(), g=ctx.createGain(), lp=ctx.createBiquadFilter();
-    o.type='triangle'; o2.type='sine'; o.frequency.value=f; o2.frequency.value=f*2.01; lp.type='lowpass'; lp.frequency.setValueAtTime(f*7,t); lp.frequency.exponentialRampToValueAtTime(f*1.5,t+dur);
+    o.type='triangle'; o2.type='sine'; o.frequency.value=f; o2.frequency.value=f*2.01; lp.type='lowpass'; lp.frequency.setValueAtTime(Math.min(f*5,6000),t); lp.frequency.exponentialRampToValueAtTime(f*1.5,t+dur);
     g.gain.setValueAtTime(0,t); g.gain.linearRampToValueAtTime(vol,t+.008); g.gain.exponentialRampToValueAtTime(.0008,t+dur);
-    o.connect(lp); o2.connect(lp); lp.connect(g); g.connect(dest||master); o.start(t); o2.start(t); o.stop(t+dur+.05); o2.stop(t+dur+.05); }
-  // D gong pentatonic, a light playful melody (eighth notes, 0 = rest)
+    var h=ctx.createGain(); h.gain.value=.25; o.connect(lp); o2.connect(h); h.connect(lp); lp.connect(g); g.connect(dest||master); o.start(t); o2.start(t); o.stop(t+dur+.05); o2.stop(t+dur+.05); }
+  // Original tune in D major pentatonic over D | Bm | G | A chords; '-' holds the previous note
+  var F=function(n){ var m={C:0,D:2,E:4,F:5,G:7,A:9,B:11}, sh=n[1]==='#'?1:0, o=+n[n.length-1]; return 440*Math.pow(2,(m[n[0]]+sh+(o-4)*12-9)/12); };
   var N={d:293.66,e:329.63,fs:369.99,a:440,b:493.88,D:587.33,E:659.25,FS:739.99,A:880};
-  var MEL=['a','b','D','b','a',0,'fs','a','b','a','fs','e','d',0,'e',0,'fs','a','b','D','E','D','b',0,'a','b','a','fs','e','fs','d',0];
-  var BASS=[146.83,0,0,0,110,0,0,0,123.47,0,0,0,110,0,0,0,146.83,0,0,0,123.47,0,0,0,98,0,0,0,110,0,0,0];
-  function tick(){ var t=ctx.currentTime+.05, i=step%MEL.length; var m=MEL[i]; if(m) pluck(N[m],t,.9,.16,music); if(BASS[i]) pluck(BASS[i],t,1.6,.12,music); if(i%8===4) pluck(N.A,t,.25,.03,music); step++; }
-  function start(){ if(!init()) return; ctx.resume(); if(timer) return; music.gain.cancelScheduledValues(ctx.currentTime); music.gain.linearRampToValueAtTime(.9,ctx.currentTime+.8); timer=setInterval(tick,230); on=true; ui(); }
+  var MEL=('A4 - F#4 A4 D5 - B4 A4 | B4 - A4 F#4 D4 - E4 F#4 | B4 - D5 B4 A4 - - - | A4 - E4 F#4 E4 - - - | '+
+           'A4 - F#4 A4 D5 - E5 D5 | F#5 - E5 D5 B4 - A4 B4 | D5 - B4 A4 E4 - F#4 E4 | D4 - - - - - - -').replace(/\|/g,'').trim().split(/\s+/);
+  var CH=[['D2','A2','D3','F#3'],['B1','F#2','B2','D3'],['G1','D2','G2','B2'],['A1','E2','A2','C#3'],['D2','A2','D3','F#3'],['B1','F#2','B2','D3'],['G1','D2','A1','E2'],['D2','A2','D3','F#3']];
+  function tick(){ var t=ctx.currentTime+.05, i=step%MEL.length, bar=Math.floor(i/8), k=i%8, c=CH[bar];
+    var m=MEL[i]; if(m!=='-') pluck(F(m),t,1.1,.13,music);
+    if(bar===6){ if(k===0) pluck(F(c[0]),t,1.2,.11,music); if(k===2||k===3) pluck(F(c[1]),t,.8,.05,music); if(k===4) pluck(F(c[2]),t,1.2,.11,music); if(k===6||k===7) pluck(F(c[3]),t,.8,.05,music); }
+    else { if(k===0) pluck(F(c[0]),t,1.8,.11,music); if(k===2||k===6) pluck(F(c[2]),t,.9,.045,music); if(k===4) pluck(F(c[1]),t,1.2,.07,music); if(k===3||k===7) pluck(F(c[3]),t,.7,.04,music); }
+    step++; }
+  function start(){ if(!init()) return; ctx.resume(); if(timer) return; music.gain.cancelScheduledValues(ctx.currentTime); music.gain.linearRampToValueAtTime(.9,ctx.currentTime+.8); timer=setInterval(tick,270); on=true; ui(); }
   function stop(){ if(!ctx) return; music.gain.linearRampToValueAtTime(0,ctx.currentTime+.4); clearInterval(timer); timer=null; on=false; ui(); }
   function ui(){ btn.classList.toggle('on',on); btn.setAttribute('aria-pressed',on?'true':'false'); txt.textContent=on?'音樂開':'開啟音樂'; }
   function sfx(kind){ if(!init()) return; ctx.resume(); var t=ctx.currentTime;
