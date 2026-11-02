@@ -1416,6 +1416,7 @@ function book(){
 /* ---------- cover: animated title screen (book-cover style) ---------- */
 const COVER_SLIDES=[['s0','動物教我的道理'],['s1','飛禽走獸說故事'],['s2','看清真相的智慧'],['s3','神奇的古代傳說'],['s4','古人這樣讀書'],['s5','戰國英雄的膽識'],['s6','寓言裡的大道理'],['s7','魏晉南北朝人物']];
 const COVER_MASC=[["qilin", "麒麟"], ["phoenix", "鳳凰"], ["tiger", "小老虎"], ["raccoon", "小貉"], ["dogrb", "小狗追兔"], ["birds", "雎鳩"], ["elephant", "小象"], ["tiger4", "老虎"], ["fox", "小狐狸"], ["donkey", "驢子"], ["monkey", "小白兔"], ["sheep", "綿羊"], ["crane", "仙鶴"], ["rooster", "公雞"], ["deer", "梅花鹿"], ["jingwei", "精衛鳥"], ["dog", "小狗"], ["pig", "小豬"], ["fish", "雙魚"], ["parrot", "鸚鵡"], ["fawn", "小鹿"], ["cub", "虎寶寶"], ["lamb", "小綿羊"], ["monkey2", "小猴"], ["squirrel", "小松鼠"], ["camel", "駱駝"], ["fish2", "鯉魚"], ["leopard", "小豹"], ["hedgehog", "小刺蝟"], ["snake", "小青蛇"], ["calf", "小黃牛"], ["duck", "小鴨子"], ["bear", "小熊"], ["cows", "乳牛"]];
+const COVER_SAY={"qilin":[["鳳毛麟角","鳳凰的羽毛、麒麟的角；比喻非常稀少珍貴的人或東西。",31]],"phoenix":[["鳳毛麟角","鳳凰的羽毛、麒麟的角；比喻非常稀少珍貴的人或東西。",31],["鵬程萬里","大鵬鳥一飛就是萬里遠，比喻前程遠大，未來不可限量。",32]],"tiger":[["虎視眈眈","像老虎一樣凶狠地注視著；形容貪婪地盯著，想要奪取。",25],["三人成虎","比喻謠言說的人多了，假的也會讓人信以為真。",3]],"raccoon":[["一丘之貉","同一座山丘上的貉，比喻彼此一樣低劣，沒有什麼差別。",0]],"dogrb":[["狡兔三窟","比喻有好幾個藏身的地方，或事先做好多種準備。",17],["守株待兔","比喻不想努力，只想靠運氣得到好處；也比喻死守過去的經驗，不懂得變通。",9]],"birds":[["驚弓之鳥","比喻受過驚嚇的人，一點動靜就非常害怕。",30]],"elephant":[["盲人摸象","比喻只看到事情的一部分，就以為了解全部。",19]],"tiger4":[["狐假虎威","比喻倚仗別人的勢力，來欺負人或嚇唬人。",16],["調虎離山","設法讓老虎離開山頭，比喻引誘對方離開有利的地方，再趁機行動。",26]],"fox":[["狐假虎威","比喻倚仗別人的勢力，來欺負人或嚇唬人。",16]],"donkey":[["黔驢技窮","比喻僅有的一點本領已經用完，再也沒有辦法。",35]],"monkey":[["守株待兔","比喻不想努力，只想靠運氣得到好處；也比喻死守過去的經驗，不懂得變通。",9],["狡兔三窟","比喻有好幾個藏身的地方，或事先做好多種準備。",17]],"sheep":[["亡羊補牢","比喻出了問題後趕快補救，還來得及，免得損失更大。",5],["歧路亡羊","比喻事情太複雜、方向太多，容易迷失，找不到真理。",14]],"crane":[["鶴立雞群","比喻一個人的外表或才能，在一群人中特別出眾。",33],["風聲鶴唳","聽到風聲和鶴叫都以為是追兵，形容驚慌害怕、疑神疑鬼。",28]],"rooster":[["聞雞起舞","比喻把握時機，及時奮發努力。",23],["呆若木雞","形容人因為害怕或驚訝，呆呆的愣住不動。",7]],"deer":[["指鹿為馬","比喻故意顛倒是非，混淆黑白。",12]],"jingwei":[["精衛填海","比喻意志堅定，不怕困難，努力到底。",21]],"dog":[["雞鳴狗盜","指學雞叫、裝狗偷東西這類小本事，或有這種本事的人。",27]],"pig":[["一諾千金","形容說話算話，答應別人的事絕不改變。",2]],"fish":[["如魚得水","像魚得到水一樣，比喻遇到很投合的人或很適合的環境。",8]],"parrot":[["口若懸河","說話像瀑布一樣滔滔不絕，形容口才很好、能言善道。",6]],"fawn":[["指鹿為馬","比喻故意顛倒是非，混淆黑白。",12],["鹿死誰手","不知道鹿會死在誰的手裡，比喻競爭時，不知道誰會得到最後勝利。",34]],"cub":[["狐假虎威","比喻倚仗別人的勢力，來欺負人或嚇唬人。",16],["虎視眈眈","像老虎一樣凶狠地注視著；形容貪婪地盯著，想要奪取。",25]],"lamb":[["亡羊補牢","比喻出了問題後趕快補救，還來得及，免得損失更大。",5]],"monkey2":[["沐猴而冠","猴子戴上帽子，假裝像人；比喻外表裝得像樣，其實沒有真本事。",15]],"squirrel":[["首鼠兩端","老鼠出洞時探頭探腦、左顧右盼，比喻猶豫不決或態度搖擺。",29]],"camel":[["鵬程萬里","大鵬鳥一飛就是萬里遠，比喻前程遠大，未來不可限量。",32]],"fish2":[["緣木求魚","爬到樹上去找魚，比喻方法錯誤，不可能達到目的。",22],["如魚得水","像魚得到水一樣，比喻遇到很投合的人或很適合的環境。",8]],"leopard":[["管中窺豹","從竹管小孔看豹，只看到一塊斑紋，比喻只看到一部分，見識不全面。",20]],"hedgehog":[["打草驚蛇","打草時驚動了草裡的蛇，比喻做事不謹慎，讓對方察覺而有了防備。",11]],"snake":[["打草驚蛇","打草時驚動了草裡的蛇，比喻做事不謹慎，讓對方察覺而有了防備。",11],["畫蛇添足","比喻做了多餘的事，反而把事情弄糟。",18],["杯弓蛇影","比喻因為疑神疑鬼，把不存在的事當真，自己嚇自己。",13]],"calf":[["對牛彈琴","比喻對不懂的人講道理，白費力氣；也諷刺說話不看對象。",10]],"duck":[["一見如故","第一次見面就像老朋友，形容彼此很投緣。",1]],"bear":[["自強不息","自己努力向上，永遠不停止。",24]],"cows":[["九牛一毛","九頭牛身上的一根毛；比喻極多數量中微不足道的一小部分。",4],["對牛彈琴","比喻對不懂的人講道理，白費力氣；也諷刺說話不看對象。",10]]};
 function cover(){
   stopAll(); SND.setMode('map'); W3.map(heroOf(S.hero),0);
   const H=CHAPTERS.filter(c=>c.line==='history').length, I=CHAPTERS.filter(c=>c.line==='island').length;
@@ -1440,7 +1441,7 @@ function cover(){
 #ttl h1 .row{display:block}
 #ttl h1 .row:hover span{animation:tWig .5s}
 #ttl .rib{display:inline-block;margin-top:8px;background:#FFE27A;border:3px solid #2E2620;border-radius:40px;padding:4px 22px;font-size:clamp(17px,4vw,24px);font-weight:900;box-shadow:0 4px 0 #2E2620;animation:tPop .6s 1.2s both}
-#ttl .stage{position:relative;z-index:2;flex:1;margin-top:10px;width:min(92vw,620px);display:flex;align-items:center;justify-content:center;min-height:0}
+#ttl .stage{position:relative;z-index:4;flex:1;margin-top:10px;width:min(92vw,620px);display:flex;align-items:center;justify-content:center;min-height:0}
 #ttl .book{position:relative;width:min(78vw,430px,38vh);aspect-ratio:16/14.4;border:5px solid #fff;border-radius:22px;box-shadow:0 0 0 3px #2E2620,0 12px 0 3px #2E2620;overflow:hidden;background:#fff;animation:tPop .7s 1.4s both, tBob 4s 2.2s ease-in-out infinite}
 #ttl .book img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity 1s}
 #ttl .book img.on{opacity:1;animation:tKen 5s linear both}
@@ -1456,7 +1457,7 @@ function cover(){
 #ttl .pano{position:absolute;left:0;right:0;bottom:0;height:130px;background:url(img/cover/pano.jpg) repeat-x 0 0/auto 130px;animation:tPan 120s linear infinite;z-index:1}
 #ttl .pano:before{content:"";position:absolute;inset:0 0 auto 0;height:26px;background:linear-gradient(#F4E2BC,rgba(244,226,188,0))}
 #ttl .spark{position:absolute;color:#F6C445;font-size:20px;animation:tTw 1.8s ease-in-out infinite;z-index:2}
-#ttl .m.pop{animation:tPop .45s both, tHop 2.4s .45s ease-in-out infinite}
+#ttl .m.mpop{animation:tPop .45s both, tHop 2.4s .45s ease-in-out infinite}
 #ttl .walk{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:0;z-index:4;animation:tWalk linear infinite}
 #ttl .walk .m{position:relative;width:clamp(48px,9vw,72px);animation:tHop2 .7s ease-in-out infinite}
 #ttl .walk .m b{display:none}
@@ -1466,6 +1467,16 @@ function cover(){
 @keyframes tHop2{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(4deg)}}
 @keyframes tFall{from{transform:translateY(0) rotate(0)}to{transform:translateY(105vh) translateX(60px) rotate(540deg)}}
 @keyframes tCf{to{transform:translate(var(--dx),var(--dy)) rotate(400deg);opacity:0}}
+#ttl .say{position:fixed;z-index:20;pointer-events:none;transform:translate(-50%,-100%);background:#fff;border:3px solid #2E2620;border-radius:18px;box-shadow:0 5px 0 #2E2620;padding:8px 16px 10px;text-align:center;width:max-content;max-width:min(82vw,340px);display:flex;flex-direction:column;align-items:center;gap:2px;animation:sayIn .35s cubic-bezier(.3,1.6,.5,1) both}
+#ttl .say:after{content:"";position:absolute;left:50%;bottom:-13px;width:18px;height:18px;background:#fff;border-right:3px solid #2E2620;border-bottom:3px solid #2E2620;transform:translateX(-50%) rotate(45deg)}
+#ttl .say.bye{animation:sayOut .6s ease-in forwards}
+#ttl .say .w{display:block;font-size:clamp(28px,6vw,40px);font-weight:900;letter-spacing:.12em;color:#D9584A;line-height:1.2;white-space:nowrap}
+#ttl .say .w span{display:inline-block;animation:sayCh .45s cubic-bezier(.3,1.8,.5,1) both}
+#ttl .say .mn{display:block;max-width:300px;font-size:13px;color:#6b5a48;margin-top:2px;font-family:var(--f-body,inherit);line-height:1.5}
+#ttl .say .who{display:block;white-space:nowrap;font-size:11px;background:#FFE27A;border:2px solid #2E2620;border-radius:9px;padding:0 8px;margin-bottom:2px}
+@keyframes sayIn{from{opacity:0;transform:translate(-50%,-60%) scale(.4)}to{opacity:1;transform:translate(-50%,-100%) scale(1)}}
+@keyframes sayOut{to{opacity:0;transform:translate(-50%,-170%) scale(.9)}}
+@keyframes sayCh{from{opacity:0;transform:translateY(18px) scale(.3) rotate(-15deg)}to{opacity:1;transform:none}}
 @keyframes tSpin{to{transform:rotate(360deg)}}
 @keyframes tDrift{from{transform:translateX(-200px)}to{transform:translateX(110vw)}}
 @keyframes tFly{from{transform:translate(-60px,0)}50%{transform:translate(55vw,-30px)}to{transform:translate(110vw,10px)}}
@@ -1503,12 +1514,22 @@ function cover(){
   const burst=(x,y)=>{ const C=['#D9584A','#F6C445','#4FA3E0','#6CC07A','#B57BE0','#F59AB5'];
     for(let i=0;i<16;i++){ const c=document.createElement('i'); c.className='cf'; c.style.left=x+'px'; c.style.top=y+'px'; c.style.background=C[i%6];
       const a=Math.random()*6.28, r=50+Math.random()*70; c.style.setProperty('--dx',Math.cos(a)*r+'px'); c.style.setProperty('--dy',Math.sin(a)*r-30+'px'); el.appendChild(c); setTimeout(()=>c.remove(),950); } };
+  let sayBox=null, sayAu=null, sayT=0;
+  const sayIdiom=(m,r)=>{ const opts=COVER_SAY[m.dataset.k]; if(!opts) return; const [w,mean,i]=opts[Math.floor(Math.random()*opts.length)];
+    const nm=(COVER_MASC.find(x=>x[0]===m.dataset.k)||[])[1]||'';
+    if(sayBox){ sayBox.remove(); clearTimeout(sayT); }
+    const b=document.createElement('div'); b.className='say';
+    b.innerHTML=`<span class="who">${nm}說</span><span class="w">${[...w].map((c,j)=>`<span style="animation-delay:${.08+j*.12}s">${c}</span>`).join('')}</span><span class="mn">${mean.length>34?mean.slice(0,33)+'…':mean}</span>`;
+    b.style.top=Math.max(r.top-14,150)+'px'; b.style.left='50%'; el.appendChild(b); sayBox=b;
+    const hw=b.offsetWidth/2+8; b.style.left=Math.min(Math.max(r.left+r.width/2,hw),innerWidth-hw)+'px';
+    try{ if(sayAu) sayAu.pause(); sayAu=new Audio(`img/cover/say/w${String(i).padStart(2,'0')}.mp3`); sayAu.play().catch(()=>{}); }catch(_){ }
+    sayT=setTimeout(()=>{ b.classList.add('bye'); setTimeout(()=>{ b.remove(); if(sayBox===b) sayBox=null; },620); },3200); };
   const setM=(m,[k,nm])=>{ m.dataset.k=k; m.style.backgroundImage=`url(img/cover/m_${k}.jpg)`; const b=m.querySelector('b'); if(b) b.textContent=nm; };
   const mk=(withName)=>{ const m=document.createElement('div'); m.className='m'; if(withName) m.innerHTML='<b></b>';
-    m.onclick=e=>{ e.stopPropagation(); SND.resume&&SND.resume(); SND.coin&&SND.coin(); const r=m.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2);
+    m.onclick=e=>{ e.stopPropagation(); SND.resume&&SND.resume(); SND.coin&&SND.coin(); const r=m.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2); sayIdiom(m,r);
       m.classList.remove('wig'); void m.offsetWidth; m.classList.add('wig'); setTimeout(()=>m.classList.remove('wig'),650); }; return m; };
   const slots=pos.map((p,i)=>{ const m=mk(true); setM(m,nextM()); m.style.left=p[0]+'%'; m.style.top=p[1]+'%'; if(i>5) m.classList.add('xw'); m.style.translate='-50% -50%'; m.style.animationDelay=`${1.6+i*.15}s, ${2.2+i*.37}s`; st.appendChild(m); return m; });
-  let si=0; const swap=setInterval(()=>{ if(!el.isConnected){ clearInterval(swap); return; } const vis=slots.filter(x=>x.offsetParent); if(!vis.length) return; const m=vis[si%vis.length]; si+=Math.random()<.5?1:2; m.classList.remove('pop'); void m.offsetWidth; setM(m,nextM()); m.classList.add('pop'); },1800);
+  let si=0; const swap=setInterval(()=>{ if(!el.isConnected){ clearInterval(swap); return; } const vis=slots.filter(x=>x.offsetParent); if(!vis.length) return; const m=vis[si%vis.length]; si+=Math.random()<.5?1:2; m.classList.remove('mpop'); void m.offsetWidth; setM(m,nextM()); m.classList.add('mpop'); },1800);
   [[17,0],[23,-8],[20,-14],[26,-4]].forEach(([d,dl])=>{ const w=document.createElement('div'); w.className='walk'; w.style.animationDuration=d+'s'; w.style.animationDelay=dl+'s';
     const m=mk(false); m.style.animationDelay=(Math.random()*.7)+'s'; setM(m,nextM()); w.appendChild(m); w.addEventListener('animationiteration',()=>setM(m,nextM())); el.appendChild(w); });
   for(let i=0;i<10;i++){ const p=document.createElement('i'); p.className='pet'; p.style.left=(Math.random()*100)+'%'; p.style.animationDuration=(9+Math.random()*8)+'s'; p.style.animationDelay=(-Math.random()*15)+'s'; el.appendChild(p); }
@@ -1519,7 +1540,7 @@ function cover(){
   const show=()=>{ imgs.forEach((im,i)=>im.classList.toggle('on',i===k)); cap.textContent=COVER_SLIDES[k][1]; };
   show(); const timer=setInterval(()=>{ k=(k+1)%imgs.length; show(); },4200);
   el.querySelector('h1').onclick=()=>{ SND.tap(); el.querySelectorAll('h1 span span').forEach((x,i)=>{ x.style.animation='none'; void x.offsetWidth; x.style.animation=`tWig .5s ${i*.05}s`; }); };
-  el.querySelector('#tgo').onclick=()=>{ SND.resume&&SND.resume(); SND.warp?SND.warp():SND.tap(); clearInterval(timer); clearInterval(swap); el.classList.add('out');
+  el.querySelector('#tgo').onclick=()=>{ SND.resume&&SND.resume(); SND.warp?SND.warp():SND.tap(); clearInterval(timer); clearInterval(swap); if(sayAu) sayAu.pause(); el.classList.add('out');
     setTimeout(()=>{ el.remove(); if(!S.seen[CH.key]&&CH.intro) chapterIntro(); else home(); },480); };
 }
 
