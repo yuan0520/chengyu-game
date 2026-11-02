@@ -1415,7 +1415,7 @@ function book(){
 
 /* ---------- cover: animated title screen (book-cover style) ---------- */
 const COVER_SLIDES=[['s0','動物教我的道理'],['s1','飛禽走獸說故事'],['s2','看清真相的智慧'],['s3','神奇的古代傳說'],['s4','古人這樣讀書'],['s5','戰國英雄的膽識'],['s6','寓言裡的大道理'],['s7','魏晉南北朝人物']];
-const COVER_MASC=[['qilin','麒麟'],['phoenix','鳳凰'],['tiger','小老虎'],['raccoon','小貉'],['dogrb','小狗追兔'],['birds','雎鳩']];
+const COVER_MASC=[["qilin", "麒麟"], ["phoenix", "鳳凰"], ["tiger", "小老虎"], ["raccoon", "小貉"], ["dogrb", "小狗追兔"], ["birds", "雎鳩"], ["elephant", "小象"], ["tiger4", "老虎"], ["fox", "小狐狸"], ["donkey", "驢子"], ["monkey", "小白兔"], ["sheep", "綿羊"], ["crane", "仙鶴"], ["rooster", "公雞"], ["deer", "梅花鹿"], ["jingwei", "精衛鳥"], ["dog", "小狗"], ["pig", "小豬"], ["fish", "雙魚"], ["parrot", "鸚鵡"], ["fawn", "小鹿"], ["cub", "虎寶寶"], ["lamb", "小綿羊"], ["monkey2", "小猴"], ["squirrel", "小松鼠"], ["camel", "駱駝"], ["fish2", "鯉魚"], ["leopard", "小豹"], ["hedgehog", "小刺蝟"], ["snake", "小青蛇"], ["calf", "小黃牛"], ["duck", "小鴨子"], ["bear", "小熊"], ["cows", "乳牛"]];
 function cover(){
   stopAll(); SND.setMode('map'); W3.map(heroOf(S.hero),0);
   const H=CHAPTERS.filter(c=>c.line==='history').length, I=CHAPTERS.filter(c=>c.line==='island').length;
@@ -1456,6 +1456,16 @@ function cover(){
 #ttl .pano{position:absolute;left:0;right:0;bottom:0;height:130px;background:url(img/cover/pano.jpg) repeat-x 0 0/auto 130px;animation:tPan 120s linear infinite;z-index:1}
 #ttl .pano:before{content:"";position:absolute;inset:0 0 auto 0;height:26px;background:linear-gradient(#F4E2BC,rgba(244,226,188,0))}
 #ttl .spark{position:absolute;color:#F6C445;font-size:20px;animation:tTw 1.8s ease-in-out infinite;z-index:2}
+#ttl .m.pop{animation:tPop .45s both, tHop 2.4s .45s ease-in-out infinite}
+#ttl .walk{position:absolute;bottom:calc(14px + env(safe-area-inset-bottom,0px));left:0;z-index:4;animation:tWalk linear infinite}
+#ttl .walk .m{position:relative;width:clamp(48px,9vw,72px);animation:tHop2 .7s ease-in-out infinite}
+#ttl .walk .m b{display:none}
+#ttl .pet{position:absolute;top:-20px;width:12px;height:12px;background:#F7B6C8;border-radius:12px 0 12px 0;z-index:2;animation:tFall linear infinite}
+#ttl .cf{position:absolute;width:9px;height:9px;border-radius:2px;z-index:9;pointer-events:none;animation:tCf .9s ease-out forwards}
+@keyframes tWalk{from{transform:translateX(-90px)}to{transform:translateX(calc(100vw + 90px))}}
+@keyframes tHop2{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-14px) rotate(4deg)}}
+@keyframes tFall{from{transform:translateY(0) rotate(0)}to{transform:translateY(105vh) translateX(60px) rotate(540deg)}}
+@keyframes tCf{to{transform:translate(var(--dx),var(--dy)) rotate(400deg);opacity:0}}
 @keyframes tSpin{to{transform:rotate(360deg)}}
 @keyframes tDrift{from{transform:translateX(-200px)}to{transform:translateX(110vw)}}
 @keyframes tFly{from{transform:translate(-60px,0)}50%{transform:translate(55vw,-30px)}to{transform:translate(110vw,10px)}}
@@ -1470,6 +1480,7 @@ function cover(){
 @keyframes tPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
 @keyframes tPan{from{background-position:0 0}to{background-position:-7688px 0}}
 @keyframes tTw{0%,100%{opacity:0;transform:scale(.4) rotate(0)}50%{opacity:1;transform:scale(1.1) rotate(90deg)}}
+@media (max-width:980px){#ttl .xw{display:none}}
 @media (max-width:600px){#ttl .m{width:56px;border-width:3px}#ttl .m b{font-size:10px;bottom:-12px}}
 @media (prefers-reduced-motion:reduce){#ttl *{animation-duration:.01s!important;animation-iteration-count:1!important}}
 </style>
@@ -1486,12 +1497,21 @@ function cover(){
 <div class="chips"><span>時空冒險 ${H} 章</span><span>寓言島 ${I} 島</span><span>${n} 個成語</span>${got?`<span>已收集 ${got} 張</span>`:''}</div></div>
 <div class="pano"></div>`;
   document.body.appendChild(el);
-  // mascots around the book
-  const st=el.querySelector('#tstage'), pos=[[7,12],[93,8],[5,52],[95,48],[15,90],[85,92]];
-  COVER_MASC.forEach(([k,nm],i)=>{ const m=document.createElement('div'); m.className='m'; m.style.backgroundImage=`url(img/cover/m_${k}.jpg)`;
-    m.style.left=pos[i][0]+'%'; m.style.top=pos[i][1]+'%'; m.style.translate='-50% -50%'; m.style.animationDelay=`${1.6+i*.15}s, ${2.2+i*.37}s`; m.innerHTML=`<b>${nm}</b>`;
-    m.onclick=()=>{ SND.resume&&SND.resume(); SND.coin&&SND.coin(); m.classList.remove('wig'); void m.offsetWidth; m.classList.add('wig'); setTimeout(()=>m.classList.remove('wig'),650); };
-    st.appendChild(m); });
+  // mascots: 6 slots around the book that keep swapping, plus a parade along the bottom
+  const st=el.querySelector('#tstage'), pos=[[7,12],[93,8],[5,52],[95,48],[15,90],[85,92],[-30,26],[130,22],[-24,74],[124,70]];
+  const pool=[...COVER_MASC].sort(()=>Math.random()-.5); let pi=0; const nextM=()=>{ const on=new Set([...el.querySelectorAll('#ttl .m')].map(x=>x.dataset.k)); for(let t=0;t<pool.length;t++){ const c=pool[(pi++)%pool.length]; if(!on.has(c[0])) return c; } return pool[(pi++)%pool.length]; };
+  const burst=(x,y)=>{ const C=['#D9584A','#F6C445','#4FA3E0','#6CC07A','#B57BE0','#F59AB5'];
+    for(let i=0;i<16;i++){ const c=document.createElement('i'); c.className='cf'; c.style.left=x+'px'; c.style.top=y+'px'; c.style.background=C[i%6];
+      const a=Math.random()*6.28, r=50+Math.random()*70; c.style.setProperty('--dx',Math.cos(a)*r+'px'); c.style.setProperty('--dy',Math.sin(a)*r-30+'px'); el.appendChild(c); setTimeout(()=>c.remove(),950); } };
+  const setM=(m,[k,nm])=>{ m.dataset.k=k; m.style.backgroundImage=`url(img/cover/m_${k}.jpg)`; const b=m.querySelector('b'); if(b) b.textContent=nm; };
+  const mk=(withName)=>{ const m=document.createElement('div'); m.className='m'; if(withName) m.innerHTML='<b></b>';
+    m.onclick=e=>{ e.stopPropagation(); SND.resume&&SND.resume(); SND.coin&&SND.coin(); const r=m.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2);
+      m.classList.remove('wig'); void m.offsetWidth; m.classList.add('wig'); setTimeout(()=>m.classList.remove('wig'),650); }; return m; };
+  const slots=pos.map((p,i)=>{ const m=mk(true); setM(m,nextM()); m.style.left=p[0]+'%'; m.style.top=p[1]+'%'; if(i>5) m.classList.add('xw'); m.style.translate='-50% -50%'; m.style.animationDelay=`${1.6+i*.15}s, ${2.2+i*.37}s`; st.appendChild(m); return m; });
+  let si=0; const swap=setInterval(()=>{ const vis=slots.filter(x=>x.offsetParent); const m=vis[si%vis.length]; si+=Math.random()<.5?1:2; m.classList.remove('pop'); void m.offsetWidth; setM(m,nextM()); m.classList.add('pop'); },1800);
+  [[17,0],[23,-8],[20,-14],[26,-4]].forEach(([d,dl])=>{ const w=document.createElement('div'); w.className='walk'; w.style.animationDuration=d+'s'; w.style.animationDelay=dl+'s';
+    const m=mk(false); m.style.animationDelay=(Math.random()*.7)+'s'; setM(m,nextM()); w.appendChild(m); w.addEventListener('animationiteration',()=>setM(m,nextM())); el.appendChild(w); });
+  for(let i=0;i<10;i++){ const p=document.createElement('i'); p.className='pet'; p.style.left=(Math.random()*100)+'%'; p.style.animationDuration=(9+Math.random()*8)+'s'; p.style.animationDelay=(-Math.random()*15)+'s'; el.appendChild(p); }
   // sparkles
   for(let i=0;i<7;i++){ const s=document.createElement('span'); s.className='spark'; s.textContent='✦'; s.style.left=(8+Math.random()*84)+'%'; s.style.top=(14+Math.random()*60)+'%'; s.style.animationDelay=(Math.random()*2)+'s'; el.appendChild(s); }
   // slideshow
@@ -1499,7 +1519,7 @@ function cover(){
   const show=()=>{ imgs.forEach((im,i)=>im.classList.toggle('on',i===k)); cap.textContent=COVER_SLIDES[k][1]; };
   show(); const timer=setInterval(()=>{ k=(k+1)%imgs.length; show(); },4200);
   el.querySelector('h1').onclick=()=>{ SND.tap(); el.querySelectorAll('h1 span span').forEach((x,i)=>{ x.style.animation='none'; void x.offsetWidth; x.style.animation=`tWig .5s ${i*.05}s`; }); };
-  el.querySelector('#tgo').onclick=()=>{ SND.resume&&SND.resume(); SND.warp?SND.warp():SND.tap(); clearInterval(timer); el.classList.add('out');
+  el.querySelector('#tgo').onclick=()=>{ SND.resume&&SND.resume(); SND.warp?SND.warp():SND.tap(); clearInterval(timer); clearInterval(swap); el.classList.add('out');
     setTimeout(()=>{ el.remove(); if(!S.seen[CH.key]&&CH.intro) chapterIntro(); else home(); },480); };
 }
 
