@@ -1,5 +1,7 @@
 <meta charset="utf-8">
 <title>成語時空冒險</title>
+<script data-goatcounter="https://chengyu.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
+<script>window.gcEvent=function(p,t){try{if(location.hostname.indexOf("github.io")<0)return;var f=function(){window.goatcounter&&window.goatcounter.count&&window.goatcounter.count({path:p,title:t||p,event:true});};window.goatcounter&&window.goatcounter.count?f():setTimeout(f,1500);}catch(e){}};</script>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700&display=swap">
@@ -1176,7 +1178,7 @@ function playBeats(L,done){
 function lessonHTML(L,delay){ const s=L.lesson; if(!s) return ''; return `<div class="lesson fx" style="animation-delay:${delay||0}s"><span class="t">歷史小講堂．${esc(s.title)}</span><p>${esc(s.text)}</p>${s.next?`<p class="nx">接下來：${esc(s.next)}</p>`:''}<button class="link" id="lsay" style="text-align:left">${TTS_OK?'🔊 唸給我聽':''}</button></div>`; }
 
 /* ---------- story: one stop ---------- */
-function level(i){
+function level(i){ try{ if(i===0) gcEvent('進入章節/'+CH.title); }catch(e){}
   stopAll();
   const L=LEVELS[i], I=IDIOMS[L.id], D=DIFFS[S.diff], H=heroOf(S.hero);
   SND.setMode(L.music); W3.level(L,H);
@@ -1267,7 +1269,7 @@ function finalStage(){
 }
 
 /* ---------- race ---------- */
-function race(){
+function race(){ gcEvent('計時競賽');
   stopAll(); const D=DIFFS[S.diff], H=heroOf(S.hero);
   SND.setMode('race'); W3.race(H);
   let total=90, score=0, combo=0, maxCombo=0, right=0, answered=0, nextQ=qStream(S.scope||'all',D.n), pausedUntil=0, over=false;
@@ -1317,7 +1319,7 @@ function bindPkSetup(){ const P=S.pk;
   document.getElementById('startPk').onclick=()=>{ keepNames(); save(); warp('擂台比武，開始！',pk); };
 }
 function scoreboard(pl,turn,out){ return `<div class="score">${pl.map(p=>`<div class="sc ${turn===p.i?'turn':''} ${out&&out.has(p.i)?'out':''}" style="--c:${PCOL[p.i]}">${esc(p.name)}<b>${p.score}</b></div>`).join('')}</div>`; }
-function pk(){
+function pk(){ gcEvent('多人PK');
   stopAll(); const P=S.pk, D=DIFFS[S.diff];
   const pl=P.players.slice(0,P.n).map((p,i)=>({name:p.name,hero:p.hero,i,score:0,right:0,kit:{bag:1,slip:1,flag:1,seal:1,shield:1}}));
   SND.setMode('arena'); W3.arena(pl);
@@ -1477,6 +1479,8 @@ function cover(){
 @keyframes sayIn{from{opacity:0;transform:translate(-50%,-60%) scale(.4)}to{opacity:1;transform:translate(-50%,-100%) scale(1)}}
 @keyframes sayOut{to{opacity:0;transform:translate(-50%,-170%) scale(.9)}}
 @keyframes sayCh{from{opacity:0;transform:translateY(18px) scale(.3) rotate(-15deg)}to{opacity:1;transform:none}}
+#ttl .vc{position:absolute;left:max(12px,env(safe-area-inset-left,0px));top:calc(12px + env(safe-area-inset-top,0px));z-index:5;background:#fff;border:2px solid #2E2620;border-radius:99px;padding:2px 12px 2px 8px;font-size:13px;font-weight:700;box-shadow:0 3px 0 #2E2620;display:flex;align-items:center;gap:6px;animation:tPop .5s 2.4s both}
+#ttl .vc b{color:#D9584A;font-variant-numeric:tabular-nums}
 @keyframes tSpin{to{transform:rotate(360deg)}}
 @keyframes tDrift{from{transform:translateX(-200px)}to{transform:translateX(110vw)}}
 @keyframes tFly{from{transform:translate(-60px,0)}50%{transform:translate(55vw,-30px)}to{transform:translate(110vw,10px)}}
@@ -1506,7 +1510,7 @@ function cover(){
 <div class="stage" id="tstage"><div class="book" id="tbook">${COVER_SLIDES.map(([f],i)=>`<img src="img/cover/${f}.jpg" alt="" ${i?'loading="lazy"':''}>`).join('')}<span class="cap" id="tcap"></span></div></div>
 <div class="cta"><button class="go" id="tgo">${got?'繼續冒險':'開始冒險'} ▶</button>
 <div class="chips"><span>時空冒險 ${H} 章</span><span>寓言島 ${I} 島</span><span>${n} 個成語</span>${got?`<span>已收集 ${got} 張</span>`:''}</div></div>
-<div class="pano"></div>`;
+<div class="pano"></div><div class="vc" id="tvc" hidden>👀 已有 <b id="tvn">…</b> 人次來玩</div>`;
   document.body.appendChild(el);
   // mascots: 6 slots around the book that keep swapping, plus a parade along the bottom
   const st=el.querySelector('#tstage'), pos=[[7,12],[93,8],[5,52],[95,48],[15,90],[85,92],[-30,26],[130,22],[-24,74],[124,70]];
@@ -1526,13 +1530,15 @@ function cover(){
     sayT=setTimeout(()=>{ b.classList.add('bye'); setTimeout(()=>{ b.remove(); if(sayBox===b) sayBox=null; },620); },3200); };
   const setM=(m,[k,nm])=>{ m.dataset.k=k; m.style.backgroundImage=`url(img/cover/m_${k}.jpg)`; const b=m.querySelector('b'); if(b) b.textContent=nm; };
   const mk=(withName)=>{ const m=document.createElement('div'); m.className='m'; if(withName) m.innerHTML='<b></b>';
-    m.onclick=e=>{ e.stopPropagation(); SND.resume&&SND.resume(); SND.coin&&SND.coin(); const r=m.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2); sayIdiom(m,r);
+    m.onclick=e=>{ e.stopPropagation(); SND.resume&&SND.resume(); SND.coin&&SND.coin(); const r=m.getBoundingClientRect(); burst(r.left+r.width/2,r.top+r.height/2); sayIdiom(m,r); gcEvent('點小動物');
       m.classList.remove('wig'); void m.offsetWidth; m.classList.add('wig'); setTimeout(()=>m.classList.remove('wig'),650); }; return m; };
   const slots=pos.map((p,i)=>{ const m=mk(true); setM(m,nextM()); m.style.left=p[0]+'%'; m.style.top=p[1]+'%'; if(i>5) m.classList.add('xw'); m.style.translate='-50% -50%'; m.style.animationDelay=`${1.6+i*.15}s, ${2.2+i*.37}s`; st.appendChild(m); return m; });
   let si=0; const swap=setInterval(()=>{ if(!el.isConnected){ clearInterval(swap); return; } const vis=slots.filter(x=>x.offsetParent); if(!vis.length) return; const m=vis[si%vis.length]; si+=Math.random()<.5?1:2; m.classList.remove('mpop'); void m.offsetWidth; setM(m,nextM()); m.classList.add('mpop'); },1800);
   [[17,0],[23,-8],[20,-14],[26,-4]].forEach(([d,dl])=>{ const w=document.createElement('div'); w.className='walk'; w.style.animationDuration=d+'s'; w.style.animationDelay=dl+'s';
     const m=mk(false); m.style.animationDelay=(Math.random()*.7)+'s'; setM(m,nextM()); w.appendChild(m); w.addEventListener('animationiteration',()=>setM(m,nextM())); el.appendChild(w); });
   for(let i=0;i<10;i++){ const p=document.createElement('i'); p.className='pet'; p.style.left=(Math.random()*100)+'%'; p.style.animationDuration=(9+Math.random()*8)+'s'; p.style.animationDelay=(-Math.random()*15)+'s'; el.appendChild(p); }
+  // visitor count from GoatCounter (shown only when the public counter is enabled)
+  try{ if(location.hostname.indexOf('github.io')>=0) fetch('https://chengyu.goatcounter.com/counter/TOTAL.json').then(r=>r.ok?r.json():null).then(d=>{ if(!d||!d.count) return; const n=el.querySelector('#tvn'), b=el.querySelector('#tvc'); if(!n||!b) return; n.textContent=d.count; b.hidden=false; }).catch(()=>{}); }catch(_){ }
   // sparkles
   for(let i=0;i<7;i++){ const s=document.createElement('span'); s.className='spark'; s.textContent='✦'; s.style.left=(8+Math.random()*84)+'%'; s.style.top=(14+Math.random()*60)+'%'; s.style.animationDelay=(Math.random()*2)+'s'; el.appendChild(s); }
   // slideshow
@@ -1540,7 +1546,7 @@ function cover(){
   const show=()=>{ imgs.forEach((im,i)=>im.classList.toggle('on',i===k)); cap.textContent=COVER_SLIDES[k][1]; };
   show(); const timer=setInterval(()=>{ k=(k+1)%imgs.length; show(); },4200);
   el.querySelector('h1').onclick=()=>{ SND.tap(); el.querySelectorAll('h1 span span').forEach((x,i)=>{ x.style.animation='none'; void x.offsetWidth; x.style.animation=`tWig .5s ${i*.05}s`; }); };
-  el.querySelector('#tgo').onclick=()=>{ SND.resume&&SND.resume(); SND.warp?SND.warp():SND.tap(); clearInterval(timer); clearInterval(swap); if(sayAu) sayAu.pause(); el.classList.add('out');
+  el.querySelector('#tgo').onclick=()=>{ gcEvent('開始冒險'); SND.resume&&SND.resume(); SND.warp?SND.warp():SND.tap(); clearInterval(timer); clearInterval(swap); if(sayAu) sayAu.pause(); el.classList.add('out');
     setTimeout(()=>{ el.remove(); if(!S.seen[CH.key]&&CH.intro) chapterIntro(); else home(); },480); };
 }
 

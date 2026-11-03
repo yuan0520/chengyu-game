@@ -4,6 +4,7 @@
 <meta property="og:title" content="成語原來是這樣來的．時空冒險闖關遊戲">
 <meta property="og:description" content="穿越回古代，看故事、選成語！480 個成語、61 個章節，免費免安裝。">
 <meta property="og:image" content="https://yuan0520.github.io/chengyu-game/promo/img/s0.jpg">
+<script data-goatcounter="https://chengyu.goatcounter.com/count" async src="https://gc.zgo.at/count.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap">
 <style>
@@ -402,7 +403,7 @@ https://yuan0520.github.io/chengyu-game/</pre></div>
   btn.addEventListener('click',function(e){ e.stopPropagation(); if(on){ stop(); muted=true; } else { start(); muted=false; sfx('tap'); } try{ localStorage.setItem('cyPromoMute',muted?'1':'0'); }catch(x){} });
   // first tap anywhere turns the music on (browsers only allow sound after a tap)
   document.addEventListener('pointerdown',function first(){ document.removeEventListener('pointerdown',first,true); if(!muted && !on) start(); },true);
-  document.querySelectorAll('.btn').forEach(function(b){ b.addEventListener('click',function(){ sfx(b.classList.contains('alt')?'tap':'go'); }); b.addEventListener('pointerenter',function(){ if(ctx) sfx('hover'); }); });
+  document.querySelectorAll('.btn').forEach(function(b){ b.addEventListener('click',function(){ try{ if(b.href&&b.href.indexOf('chengyu-game/')>0&&window.goatcounter&&goatcounter.count) goatcounter.count({path:'推廣頁-點免費開始玩',event:true}); }catch(x){} sfx(b.classList.contains('alt')?'tap':'go'); }); b.addEventListener('pointerenter',function(){ if(ctx) sfx('hover'); }); });
   document.querySelectorAll('.m').forEach(function(m){ m.addEventListener('click',function(){ sfx('pop'); m.classList.remove('wig'); void m.offsetWidth; m.classList.add('wig'); }); });
   document.querySelectorAll('.copy').forEach(function(b){ b.addEventListener('click',function(){ sfx('coin'); }); });
   document.querySelectorAll('.stk').forEach(function(c){ c.addEventListener('pointerenter',function(){ if(ctx&&on) sfx('hover'); }); });
