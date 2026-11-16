@@ -423,7 +423,8 @@ const BUY_URL='promo/#buy', FREE_CH=3;
 const bnum=n=>{ const C='一二三四五六七八九'; return n<10?C[n-1]:n===10?'十':'十'+C[n-11]; };
 S.books=S.books||{};
 const bookOf=id=>Math.ceil(IDIOMS[id].ep/4);
-function canPlay(i){ const L=LEVELS[i], b=bookOf(L.id); if(b===1||S.books[b]) return true;
+const hasBook=()=>Object.keys(S.books).some(k=>S.books[k]);
+function canPlay(i){ const L=LEVELS[i], b=bookOf(L.id); if(b===1||hasBook()) return true;
   if(CH.line==='book') return CH.eps[0]%4===1&&i<2; return lineOf(CH.line).indexOf(CH)<FREE_CH; }
 async function sha(t){ const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(t)); return [...new Uint8Array(d)].map(x=>x.toString(16).padStart(2,'0')).join(''); }
 function unlockDlg(b,lead){ const old=document.getElementById('ulk'); if(old) old.remove();
@@ -432,12 +433,12 @@ function unlockDlg(b,lead){ const old=document.getElementById('ulk'); if(old) ol
   const open=Object.keys(S.books).filter(k=>S.books[k]).map(Number);
   d.innerHTML=`<div style="background:#FFF8EA;border-radius:18px;max-width:420px;width:100%;padding:20px 18px;box-shadow:0 10px 40px rgba(0,0,0,.3);font-family:var(--f-body,inherit);color:#2E2620">
     <p style="margin:0 0 4px;color:#D9584A;font-weight:900">🔑 書本解鎖</p>
-    <h3 style="margin:0 0 8px;font-size:20px">${lead?esc(lead):`解鎖第${bnum(b)}輯：${esc(BOOKS.t[b-1])}`}</h3>
-    <p style="margin:0 0 10px;font-size:14px;line-height:1.6">打開《成語原來是這樣來的．第${bnum(b)}輯》，翻到書末「成語闖關遊戲」那一頁，把上面的<b>四字遊戲密語</b>輸入下面。解鎖後，這一輯的 32 個成語關卡在每種模式都能玩。</p>
+    <h3 style="margin:0 0 8px;font-size:20px">${lead?esc(lead):'輸入書中密語，解鎖全部關卡'}</h3>
+    <p style="margin:0 0 10px;font-size:14px;line-height:1.6">打開任何一輯《成語原來是這樣來的》，翻到書末「成語闖關遊戲」那一頁，把上面的<b>四字遊戲密語</b>輸入下面。只要有一本書，<b>全部 15 輯、480 個成語關卡</b>都能玩。</p>
     <input id="ulkIn" maxlength="8" placeholder="輸入四字密語" style="width:100%;box-sizing:border-box;font-size:22px;padding:10px 12px;border-radius:12px;border:2px solid #E2D6BC;text-align:center;letter-spacing:.2em">
     <p id="ulkMsg" style="min-height:20px;margin:6px 0;font-size:14px;color:#C0392B"></p>
     <div style="display:flex;gap:8px"><button class="btn" id="ulkGo" style="flex:1">解鎖</button><button class="btn ghost" id="ulkNo">先不要</button></div>
-    <p style="margin:12px 0 0;font-size:13px;line-height:1.6;color:#6b5a48">還沒有這本書？第一輯的 32 關全部免費，其他每輯也能先玩 2 關。<a href="${BUY_URL}" target="_blank" rel="noopener" id="ulkBuy" style="color:#D9584A;font-weight:700">看看這套書 ›</a>${open.length?`<br>已解鎖：第 ${open.join('、')} 輯`:''}</p></div>`;
+    <p style="margin:12px 0 0;font-size:13px;line-height:1.6;color:#6b5a48">還沒有書？第一輯的 32 關全部免費，其他每輯也能先玩 2 關。<a href="${BUY_URL}" target="_blank" rel="noopener" id="ulkBuy" style="color:#D9584A;font-weight:700">看看這套書 ›</a></p></div>`;
   document.body.appendChild(d);
   const inp=d.querySelector('#ulkIn'), msg=d.querySelector('#ulkMsg');
   d.querySelector('#ulkNo').onclick=()=>d.remove();
@@ -446,7 +447,7 @@ function unlockDlg(b,lead){ const old=document.getElementById('ulk'); if(old) ol
     let hit=0; try{ const h=await sha(v); hit=+(Object.keys(BOOKS.h).find(k=>BOOKS.h[k]===h)||0); }catch(e){ msg.textContent='這個瀏覽器無法驗證，請換 Chrome 或 Safari 再試'; return; }
     if(!hit){ msg.textContent='密語不對喔，再看一次書上的四個字'; try{ gcEvent('密語錯誤/第'+b+'輯'); }catch(e){} return; }
     S.books[hit]=1; save(); try{ gcEvent('解鎖成功/第'+hit+'輯'); }catch(e){} d.remove(); SND.item&&SND.item();
-    toast(`解鎖成功！第${bnum(hit)}輯：${BOOKS.t[hit-1]}`); home(); };
+    toast('解鎖成功！全部 15 輯的關卡都能玩了'); home(); };
   setTimeout(()=>inp.focus(),50); }
 /* 從書裡 QR Code（?book=N）或廣告試玩入口（?try=1）進來 */
 let ENTRY=null;
@@ -1145,7 +1146,7 @@ function home(){
   if(tab==='story'){
     const epTxt=c=>{ const e=c.eps||[]; return e.length?('書：第 '+e.slice(0,3).join('、')+(e.length>3?'… ':' ')+'集'):''; };
     const lineSw=`<div class="seg" id="lines"><button data-l="book" class="${S.line==='book'?'sel':''}">書本闖關</button><button data-l="history" class="${S.line==='history'?'sel':''}">時空冒險</button><button data-l="island" class="${S.line==='island'?'sel':''}">寓言島</button></div>`;
-    const curB=CH.line==='book'?CH.book:0, ulkBar=curB&&curB>1&&!S.books[curB]?`<div class="row" style="background:#FFF1D6;border-radius:12px;padding:8px 12px;justify-content:space-between"><span class="small">第${bnum(curB)}輯目前可試玩前 2 關</span><button class="btn" id="ulkBar" style="padding:6px 14px">🔑 輸入書中密語</button></div>`:'';
+    const curB=CH.line==='book'?CH.book:0, ulkBar=curB&&curB>1&&!hasBook()?`<div class="row" style="background:#FFF1D6;border-radius:12px;padding:8px 12px;justify-content:space-between"><span class="small">第${bnum(curB)}輯目前可試玩前 2 關</span><button class="btn" id="ulkBar" style="padding:6px 14px">🔑 輸入書中密語</button></div>`:'';
     const chs=`<div style="display:flex;flex-direction:column;gap:8px"><p class="label">選擇章節（${lineOf(S.line).length} 章）</p>${lineSw}<div class="chs" id="chs">${CHAPTERS.filter(c=>c.line===(S.line||'history')).map(c=>{ const n=c.stops?c.stops.filter(l=>anyStars(l.id)).length:0;
       return `<button class="chc ${c.key===CH.key?'sel':''} ${c.soon?'soon':''}" data-k="${c.key}" style="--c:${c.color}" ${c.soon?'disabled':''}><b>${esc(c.title)}</b><span class="e">${esc(c.era||'')}</span><span class="e">${esc(epTxt(c))}</span><span class="p">${c.soon?'製作中':`過關 ${n} / ${c.stops.length} 站`}</span></button>`; }).join('')}</div></div>`;
     body=`${chs}${ulkBar}<div class="row" style="justify-content:space-between"><p class="label">${esc(CH.title)}．冒險地圖（${DIFFS[S.diff].name}的星星）</p>${CH.intro?'<button class="link" id="intro">看歷史背景</button>':''}</div><div><div class="map">${LEVELS.map((l,i)=>{ const st=starsOf(l.id), pay=!canPlay(i), ok=unlocked(i)&&!pay;
@@ -1178,7 +1179,7 @@ function home(){
   const ub=document.getElementById('ulkBar'); if(ub) ub.onclick=()=>unlockDlg(curB);
   sheetShow(); sheetTop();
   if(ENTRY&&!ENTRY.shown){ ENTRY.shown=1;
-    if(ENTRY.book&&ENTRY.book>1&&!S.books[ENTRY.book]) unlockDlg(ENTRY.book,`歡迎第${bnum(ENTRY.book)}輯的讀者！`);
+    if(ENTRY.book&&!hasBook()) unlockDlg(ENTRY.book,`歡迎第${bnum(ENTRY.book)}輯的讀者！`);
     else if(ENTRY.book) toast(`歡迎！這是第${bnum(ENTRY.book)}輯「${BOOKS.t[ENTRY.book-1]}」的關卡`);
     else if(ENTRY.try) toast('歡迎試玩！第一輯的 32 關全部免費'); }
 }
