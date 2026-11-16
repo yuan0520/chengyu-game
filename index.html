@@ -449,10 +449,11 @@ function unlockDlg(b,lead){ const old=document.getElementById('ulk'); if(old) ol
     S.books[hit]=1; save(); try{ gcEvent('解鎖成功/第'+hit+'輯'); }catch(e){} d.remove(); SND.item&&SND.item();
     toast('解鎖成功！全部 15 輯的關卡都能玩了'); home(); };
   setTimeout(()=>inp.focus(),50); }
-/* 從書裡 QR Code（?book=N）或廣告試玩入口（?try=1）進來 */
+/* 從書裡 QR Code（?book=N）進來＝直接解鎖全部；廣告試玩入口（?try=1）只能試玩 */
 let ENTRY=null;
 try{ const Q=new URLSearchParams(location.search), qb=+Q.get('book');
-  if(qb>=1&&qb<=15){ setChapter('b'+String(qb*4-3).padStart(2,'0')); S.tab='story'; ENTRY={book:qb}; }
+  if(qb>=1&&qb<=15){ const nw=!hasBook(); S.books[qb]=1; save(); if(nw) try{ gcEvent('QR解鎖/第'+qb+'輯'); }catch(e){}
+    setChapter('b'+String(qb*4-3).padStart(2,'0')); S.tab='story'; ENTRY={book:qb,nw}; }
   else if(Q.has('try')){ setChapter('b01'); S.tab='story'; ENTRY={try:1}; }
   const fr=Q.get('from'); if(fr) gcEvent('來源/'+fr);
   if(ENTRY) history.replaceState(null,'',location.pathname); }catch(e){}
@@ -1179,7 +1180,7 @@ function home(){
   const ub=document.getElementById('ulkBar'); if(ub) ub.onclick=()=>unlockDlg(curB);
   sheetShow(); sheetTop();
   if(ENTRY&&!ENTRY.shown){ ENTRY.shown=1;
-    if(ENTRY.book&&!hasBook()) unlockDlg(ENTRY.book,`歡迎第${bnum(ENTRY.book)}輯的讀者！`);
+    if(ENTRY.book&&ENTRY.nw) toast(`歡迎第${bnum(ENTRY.book)}輯的讀者！全部 15 輯、480 關都解鎖了`);
     else if(ENTRY.book) toast(`歡迎！這是第${bnum(ENTRY.book)}輯「${BOOKS.t[ENTRY.book-1]}」的關卡`);
     else if(ENTRY.try) toast('歡迎試玩！第一輯的 32 關全部免費'); }
 }
