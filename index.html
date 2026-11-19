@@ -420,9 +420,45 @@ let CH=OPEN_CH.find(c=>c.key===S.ch)||lineOf(S.line)[0]||OPEN_CH[0], LEVELS=CH.s
 function setChapter(k){ CH=OPEN_CH.find(c=>c.key===k)||OPEN_CH[0]; LEVELS=CH.stops; S.ch=CH.key; S.line=CH.line; save(); }
 /* ---------- 書本解鎖：第一輯免費；其他輯用書中「遊戲密語」解鎖 ---------- */
 const BUY_URL='promo/#buy', FREE_CH=3;
-const STORES=[['樂天 Kobo','https://www.kobo.com/tw/zh/search?query=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84','#BF0000'],['Pubu 電子書城','https://www.pubu.com.tw/search?q=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84','#2B7BD6']];
+const STORES=[['樂天 Kobo','https://www.kobo.com/tw/zh/search?query=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84','#BF0000'],['Pubu 電子書城','https://www.pubu.com.tw/search?q=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84','#2B7BD6'],['Amazon Kindle（海外）','https://www.amazon.com/s?k=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84&i=digital-text','#232F3E']];
 function storeBtns(tag){ return `<div style="display:flex;gap:8px;flex-wrap:wrap">${STORES.map(([n,u,c])=>`<a class="btn" href="${u}" target="_blank" rel="noopener" data-store="${n}" data-tag="${tag}" style="background:${c};color:#fff;text-decoration:none;padding:8px 14px;font-size:15px">📖 ${n}</a>`).join('')}</div>`; }
 function bindStores(root){ root.querySelectorAll('[data-store]').forEach(a=>a.onclick=()=>{ try{ gcEvent('點購書/'+a.dataset.store+'/'+a.dataset.tag); }catch(e){} }); }
+/* ---------- 家長成績單：一張可存圖、可分享的學習成果卡 ---------- */
+function parentCard(){
+  const seen=new Set(), got=[];
+  CHAPTERS.forEach(c=>(c.stops||[]).forEach(L=>{ if(!seen.has(L.id)&&anyStars(L.id)&&IDIOMS[L.id]){ seen.add(L.id); got.push(IDIOMS[L.id]); } }));
+  const W=1080,H=1350,cv=document.createElement('canvas'); cv.width=W; cv.height=H; const g=cv.getContext('2d');
+  const F=(w,s)=>`${w} ${s}px "PingFang TC","Noto Sans TC","Microsoft JhengHei",sans-serif`;
+  g.fillStyle='#FFF6E6'; g.fillRect(0,0,W,H); g.fillStyle='#E8654A'; g.fillRect(0,0,W,16);
+  g.textAlign='center'; g.fillStyle='#2B2B2B'; g.font=F(900,64); g.fillText('成語學習成績單',W/2,130);
+  const d=new Date(); g.font=F(500,30); g.fillStyle='#7a6a5a'; g.fillText(`${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}　${heroOf(S.hero).name} 的冒險紀錄`,W/2,185);
+  g.fillStyle='#FFD64D'; g.beginPath(); g.arc(W/2,360,135,0,Math.PI*2); g.fill(); g.lineWidth=8; g.strokeStyle='#2B2B2B'; g.stroke();
+  g.fillStyle='#2B2B2B'; g.font=F(900,120); g.fillText(String(got.length),W/2,395); g.font=F(700,30); g.fillText('個成語',W/2,440);
+  g.font=F(500,30); g.fillStyle='#5a4a3a'; g.fillText(`已學會 ${got.length} / 480 個成語，共得 ${Object.values(S.stars).reduce((a,o)=>a+Object.values(o).reduce((x,y)=>x+y,0),0)} 顆星`,W/2,545);
+  const show=got.slice(-16); g.font=F(800,40);
+  show.forEach((x,k)=>{ const col=k%4,row=Math.floor(k/4), cx=150+col*260, cy=630+row*105;
+    g.fillStyle='#fff'; g.strokeStyle='#2B2B2B'; g.lineWidth=4; g.beginPath(); g.roundRect?g.roundRect(cx-115,cy-45,230,80,18):g.rect(cx-115,cy-45,230,80); g.fill(); g.stroke();
+    g.fillStyle='#2B2B2B'; g.fillText(x.w,cx,cy+10); });
+  if(!show.length){ g.font=F(600,36); g.fillStyle='#7a6a5a'; g.fillText('還沒有過關的成語，快去闖第一關吧！',W/2,720); }
+  if(got.length>16){ g.font=F(500,26); g.fillStyle='#7a6a5a'; g.fillText(`（列出最近 16 個，另有 ${got.length-16} 個）`,W/2,1065); }
+  g.fillStyle='#2F6E4F'; g.fillRect(0,1110,W,240); g.fillStyle='#fff'; g.font=F(800,36); g.fillText('免費玩成語闖關遊戲',W/2,1175);
+  g.font=F(600,30); g.fillText('yuan0520.github.io/chengyu-game',W/2,1225);
+  g.font=F(500,26); g.fillStyle='#FFE7A8'; g.fillText('故事都在《成語原來是這樣來的》電子書．Kobo・Pubu・Amazon Kindle',W/2,1285);
+  const url=cv.toDataURL('image/png');
+  const old=document.getElementById('pcd'); if(old) old.remove();
+  const m=document.createElement('div'); m.id='pcd'; m.style.cssText='position:fixed;inset:0;z-index:80;background:rgba(40,30,20,.6);display:flex;align-items:center;justify-content:center;padding:16px';
+  m.innerHTML=`<div style="background:#fff;border-radius:18px;padding:14px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:10px"><img src="${url}" style="width:100%;border-radius:10px" alt="家長成績單">
+    <p class="small" style="margin:0">把這張成績單傳給爸爸媽媽，或分享到家長群組 👍</p>
+    <div class="row" style="gap:8px;flex-wrap:wrap"><button class="btn" id="pcShare">分享</button><a class="btn ghost" id="pcSave" download="成語成績單.png" href="${url}" style="text-decoration:none;color:#2E2620;border-color:#2E2620">存成圖片</a><button class="btn ghost" id="pcX" style="color:#2E2620;border-color:#2E2620">關閉</button></div></div>`;
+  document.body.appendChild(m);
+  m.onclick=e=>{ if(e.target===m) m.remove(); }; document.getElementById('pcX').onclick=()=>m.remove();
+  document.getElementById('pcSave').onclick=()=>{ try{ gcEvent('成績單/存圖'); }catch(e){} };
+  document.getElementById('pcShare').onclick=async()=>{ try{ gcEvent('成績單/分享'); }catch(e){}
+    try{ const b=await (await fetch(url)).blob(), f=new File([b],'成語成績單.png',{type:'image/png'});
+      if(navigator.canShare&&navigator.canShare({files:[f]})){ await navigator.share({files:[f],title:'成語學習成績單',text:'我在成語闖關遊戲學會了 '+got.length+' 個成語！ https://yuan0520.github.io/chengyu-game/'}); return; }
+    }catch(e){ if(e&&e.name==='AbortError') return; }
+    toast('這台裝置不支援直接分享，請按「存成圖片」再傳送'); };
+}
 function bookAd(){ return `<div style="background:linear-gradient(135deg,#FFF1D6,#FDE7DF);border:2px solid #F2C9A8;border-radius:16px;padding:14px 14px 12px;color:#2E2620;display:flex;flex-direction:column;gap:8px">
   <div style="display:flex;gap:12px;align-items:center"><img src="img/cover/${COVER_SLIDES[0][0]}.jpg" alt="成語原來是這樣來的 書封" style="width:74px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.2);flex:none">
   <div><p style="margin:0;color:#D9584A;font-weight:900;font-size:13px">📚 電子書好評上架中</p><b style="font-size:18px;line-height:1.35">《成語原來是這樣來的》全 15 輯</b>
@@ -1173,8 +1209,8 @@ function home(){
     <div class="tabs" id="tabs">${[['story','闖關冒險'],['race','計時競賽'],['pk','多人 PK']].map(([k,n])=>`<button data-k="${k}" class="${tab===k?'sel':''}">${n}</button>`).join('')}</div>
     ${body}
     <div><p class="label">我的道具（銅錢 ${S.coins}）</p>${itemsHTML(S.items,Object.keys(ITEMS),{time:1,seal:1})}</div>
-    <div class="row"><button class="btn ghost" id="shop">道具商店</button><button class="btn ghost" id="bk">成語書</button></div>
-    ${bookAd()}`; bindStores(ui);
+    <div class="row"><button class="btn ghost" id="shop">道具商店</button><button class="btn ghost" id="bk">成語書</button><button class="btn ghost" id="pcard">📋 家長成績單</button></div>
+    ${bookAd()}`; bindStores(ui); { const pc=document.getElementById('pcard'); if(pc) pc.onclick=()=>{ SND.tap(); parentCard(); }; }
   ui.querySelectorAll('.items .item').forEach(b=>{ b.onclick=()=>toast(`${ITEMS[b.dataset.item].name}：${ITEMS[b.dataset.item].note}`); });
   ui.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{ S.tab=b.dataset.k; save(); SND.tap(); home(); });
   ui.querySelectorAll('#heroes button').forEach(b=>b.onclick=()=>{ S.hero=b.dataset.k; save(); SND.tap(); home(); });
