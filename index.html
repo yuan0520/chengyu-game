@@ -459,6 +459,41 @@ function parentCard(){
     }catch(e){ if(e&&e.name==='AbortError') return; }
     toast('這台裝置不支援直接分享，請按「存成圖片」再傳送'); };
 }
+/* ---------- 每日挑戰：每天一題，從 480 個成語抽（同一天每個人同一題），連續天數有獎勵 ---------- */
+const dayKey=()=>{ const d=new Date(); return d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate(); };
+function dailyQ(){ const k=dayKey(); let h=7; for(const c of k) h=(h*131+c.charCodeAt(0))>>>0;
+  const rnd=()=>{ h=(h*1103515245+12345)>>>0; return h/4294967296; };
+  const ans=BANK[Math.floor(rnd()*BANK.length)], opts=[ans.w];
+  while(opts.length<4){ const w=BANK[Math.floor(rnd()*BANK.length)].w; if(!opts.includes(w)) opts.push(w); }
+  for(let i=3;i>0;i--){ const j=Math.floor(rnd()*(i+1)); [opts[i],opts[j]]=[opts[j],opts[i]]; }
+  return {ans,opts}; }
+function dailyHTML(){ S.daily=S.daily||{};
+  const done=S.daily.day===dayKey(), st=S.daily.streak||0;
+  return `<div id="daily" style="background:linear-gradient(135deg,#E7F4EC,#FFF6E6);border:2px solid #9CCBAF;border-radius:16px;padding:12px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px">
+    <div><b style="font-size:17px">📅 每日挑戰</b><p class="small" style="margin:2px 0 0">${done?(S.daily.ok?'今天答對了！明天再來 👍':'今天已挑戰過，明天再來！'):'每天一題，答對得 20 銅錢'}${st>1?`　🔥 連續 ${st} 天`:''}</p></div>
+    <button class="btn" id="dailyGo" ${done?'disabled':''}>${done?'已完成':'挑戰'}</button></div>`; }
+function dailyOpen(){ const {ans,opts}=dailyQ(); const bk=Math.ceil(ans.e/4);
+  const old=document.getElementById('dq'); if(old) old.remove();
+  const m=document.createElement('div'); m.id='dq'; m.style.cssText='position:fixed;inset:0;z-index:80;background:rgba(40,30,20,.6);display:flex;align-items:center;justify-content:center;padding:16px';
+  m.innerHTML=`<div style="background:#fff;color:#2E2620;border-radius:18px;padding:18px;max-width:420px;width:100%;display:flex;flex-direction:column;gap:10px">
+    <b style="font-size:19px">📅 今天的成語挑戰</b><p style="margin:0;line-height:1.7">哪一個成語的意思是：<br><b>「${esc(ans.m)}」</b></p>
+    <div id="dqo" style="display:grid;grid-template-columns:1fr 1fr;gap:8px">${opts.map(w=>`<button class="btn ghost" data-w="${esc(w)}" style="color:#2E2620;border-color:#2E2620;font-size:18px">${esc(w)}</button>`).join('')}</div>
+    <div id="dqr"></div></div>`;
+  document.body.appendChild(m);
+  m.querySelectorAll('#dqo button').forEach(b=>b.onclick=()=>{
+    const ok=b.dataset.w===ans.w, y=new Date(Date.now()-864e5), yk=y.getFullYear()+'-'+(y.getMonth()+1)+'-'+y.getDate();
+    S.daily.streak=(S.daily.day===yk?(S.daily.streak||0):0)+1; S.daily.day=dayKey(); S.daily.ok=ok; if(ok) S.coins+=20; save();
+    try{ gcEvent('每日挑戰/'+(ok?'對':'錯')); }catch(e){}
+    try{ ok?SND.tap():0; }catch(e){}
+    m.querySelectorAll('#dqo button').forEach(x=>{ x.disabled=true; if(x.dataset.w===ans.w){ x.style.background='#2F6E4F'; x.style.color='#fff'; } else if(x===b){ x.style.background='#E8654A'; x.style.color='#fff'; } });
+    m.querySelector('#dqr').innerHTML=`<p style="margin:0 0 6px"><b>${ok?'答對了！+20 銅錢 🎉':'差一點！正確答案是「'+esc(ans.w)+'」'}</b>　${S.daily.streak>1?'🔥 連續 '+S.daily.streak+' 天':''}</p>
+      ${ans.x?`<p class="small" style="margin:0 0 8px">例句：${esc(ans.x)}</p>`:''}
+      <p class="small" style="margin:0 0 8px">📚 這個成語的漫畫故事在《成語原來是這樣來的》第${bnum(bk)}輯</p>
+      ${storeBtns('每日挑戰')}<button class="btn" id="dqx" style="margin-top:10px;width:100%">回到遊戲</button>`;
+    bindStores(m); m.querySelector('#dqx').onclick=()=>{ m.remove(); home(); };
+  });
+  m.onclick=e=>{ if(e.target===m) m.remove(); };
+}
 function bookAd(){ return `<div style="background:linear-gradient(135deg,#FFF1D6,#FDE7DF);border:2px solid #F2C9A8;border-radius:16px;padding:14px 14px 12px;color:#2E2620;display:flex;flex-direction:column;gap:8px">
   <div style="display:flex;gap:12px;align-items:center"><img src="img/cover/${COVER_SLIDES[0][0]}.jpg" alt="成語原來是這樣來的 書封" style="width:74px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.2);flex:none">
   <div><p style="margin:0;color:#D9584A;font-weight:900;font-size:13px">📚 電子書好評上架中</p><b style="font-size:18px;line-height:1.35">《成語原來是這樣來的》全 15 輯</b>
@@ -1206,11 +1241,12 @@ function home(){
       <button class="btn wide" id="startRace">開始競賽</button>`;
   } else body=pkSetup(diffPick);
   ui.innerHTML=`<div><span class="eyebrow">成語時空冒險</span><h1 style="font-size:26px">穿越回${esc(CH.short)}</h1></div>
+    ${dailyHTML()}
     <div class="tabs" id="tabs">${[['story','闖關冒險'],['race','計時競賽'],['pk','多人 PK']].map(([k,n])=>`<button data-k="${k}" class="${tab===k?'sel':''}">${n}</button>`).join('')}</div>
     ${body}
     <div><p class="label">我的道具（銅錢 ${S.coins}）</p>${itemsHTML(S.items,Object.keys(ITEMS),{time:1,seal:1})}</div>
     <div class="row"><button class="btn ghost" id="shop">道具商店</button><button class="btn ghost" id="bk">成語書</button><button class="btn ghost" id="pcard">📋 家長成績單</button></div>
-    ${bookAd()}`; bindStores(ui); { const pc=document.getElementById('pcard'); if(pc) pc.onclick=()=>{ SND.tap(); parentCard(); }; }
+    ${bookAd()}`; bindStores(ui); { const pc=document.getElementById('pcard'); if(pc) pc.onclick=()=>{ SND.tap(); parentCard(); }; } { const dg=document.getElementById('dailyGo'); if(dg) dg.onclick=()=>{ SND.tap(); dailyOpen(); }; }
   ui.querySelectorAll('.items .item').forEach(b=>{ b.onclick=()=>toast(`${ITEMS[b.dataset.item].name}：${ITEMS[b.dataset.item].note}`); });
   ui.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{ S.tab=b.dataset.k; save(); SND.tap(); home(); });
   ui.querySelectorAll('#heroes button').forEach(b=>b.onclick=()=>{ S.hero=b.dataset.k; save(); SND.tap(); home(); });
