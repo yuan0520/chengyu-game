@@ -420,6 +420,15 @@ let CH=OPEN_CH.find(c=>c.key===S.ch)||lineOf(S.line)[0]||OPEN_CH[0], LEVELS=CH.s
 function setChapter(k){ CH=OPEN_CH.find(c=>c.key===k)||OPEN_CH[0]; LEVELS=CH.stops; S.ch=CH.key; S.line=CH.line; save(); }
 /* ---------- 書本解鎖：第一輯免費；其他輯用書中「遊戲密語」解鎖 ---------- */
 const BUY_URL='promo/#buy', FREE_CH=3;
+const STORES=[['樂天 Kobo','https://www.kobo.com/tw/zh/search?query=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84','#BF0000'],['Pubu 電子書城','https://www.pubu.com.tw/search?q=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84','#2B7BD6']];
+function storeBtns(tag){ return `<div style="display:flex;gap:8px;flex-wrap:wrap">${STORES.map(([n,u,c])=>`<a class="btn" href="${u}" target="_blank" rel="noopener" data-store="${n}" data-tag="${tag}" style="background:${c};color:#fff;text-decoration:none;padding:8px 14px;font-size:15px">📖 ${n}</a>`).join('')}</div>`; }
+function bindStores(root){ root.querySelectorAll('[data-store]').forEach(a=>a.onclick=()=>{ try{ gcEvent('點購書/'+a.dataset.store+'/'+a.dataset.tag); }catch(e){} }); }
+function bookAd(){ return `<div style="background:linear-gradient(135deg,#FFF1D6,#FDE7DF);border:2px solid #F2C9A8;border-radius:16px;padding:14px 14px 12px;color:#2E2620;display:flex;flex-direction:column;gap:8px">
+  <div style="display:flex;gap:12px;align-items:center"><img src="img/cover/${COVER_SLIDES[0][0]}.jpg" alt="成語原來是這樣來的 書封" style="width:74px;border-radius:8px;box-shadow:0 3px 8px rgba(0,0,0,.2);flex:none">
+  <div><p style="margin:0;color:#D9584A;font-weight:900;font-size:13px">📚 電子書好評上架中</p><b style="font-size:18px;line-height:1.35">《成語原來是這樣來的》全 15 輯</b>
+  <p class="small" style="margin:4px 0 0">四格漫畫、成語卡、出處原文、小測驗和練習本。每輯 32 個成語，定價 NT$299，上市 8 折 <b style="color:#D9584A">NT$239</b>。書末附遊戲密語，買一本就解鎖全部 480 關！</p></div></div>
+  <p style="margin:0;font-size:14px;line-height:1.6">❤️ 這個遊戲免費給大家玩。喜歡的話，請買一本電子書<b>支持作者 Dr. Yuan</b>，您的支持，就是我們繼續創作更多成語故事和學習遊戲的動力！</p>
+  ${storeBtns('首頁')}<p class="small" style="margin:0;color:#8a7a6a">Google Play 圖書、Readmoo 即將上架</p></div>`; }
 const bnum=n=>{ const C='一二三四五六七八九'; return n<10?C[n-1]:n===10?'十':'十'+C[n-11]; };
 S.books=S.books||{};
 const bookOf=id=>Math.ceil(IDIOMS[id].ep/4);
@@ -438,7 +447,8 @@ function unlockDlg(b,lead){ const old=document.getElementById('ulk'); if(old) ol
     <input id="ulkIn" maxlength="8" placeholder="輸入四字密語" style="width:100%;box-sizing:border-box;font-size:22px;padding:10px 12px;border-radius:12px;border:2px solid #E2D6BC;text-align:center;letter-spacing:.2em">
     <p id="ulkMsg" style="min-height:20px;margin:6px 0;font-size:14px;color:#C0392B"></p>
     <div style="display:flex;gap:8px"><button class="btn" id="ulkGo" style="flex:1">解鎖</button><button class="btn ghost" id="ulkNo">先不要</button></div>
-    <p style="margin:12px 0 0;font-size:13px;line-height:1.6;color:#6b5a48">還沒有書？第一輯的 32 關全部免費，其他每輯也能先玩 2 關。<a href="${BUY_URL}" target="_blank" rel="noopener" id="ulkBuy" style="color:#D9584A;font-weight:700">看看這套書 ›</a></p></div>`;
+    <p style="margin:12px 0 0;font-size:13px;line-height:1.6;color:#6b5a48">還沒有書？第一輯的 32 關全部免費，其他每輯也能先玩 2 關。<a href="${BUY_URL}" target="_blank" rel="noopener" id="ulkBuy" style="color:#D9584A;font-weight:700">看看這套書 ›</a></p>
+    <p style="margin:8px 0 6px;font-size:13px;line-height:1.6">電子書每輯 NT$239（8 折），買一本就是支持作者繼續創作 ❤️</p>${storeBtns('解鎖視窗')}</div>`; bindStores(d);
   document.body.appendChild(d);
   const inp=d.querySelector('#ulkIn'), msg=d.querySelector('#ulkMsg');
   d.querySelector('#ulkNo').onclick=()=>d.remove();
@@ -1163,7 +1173,8 @@ function home(){
     <div class="tabs" id="tabs">${[['story','闖關冒險'],['race','計時競賽'],['pk','多人 PK']].map(([k,n])=>`<button data-k="${k}" class="${tab===k?'sel':''}">${n}</button>`).join('')}</div>
     ${body}
     <div><p class="label">我的道具（銅錢 ${S.coins}）</p>${itemsHTML(S.items,Object.keys(ITEMS),{time:1,seal:1})}</div>
-    <div class="row"><button class="btn ghost" id="shop">道具商店</button><button class="btn ghost" id="bk">成語書</button></div>`;
+    <div class="row"><button class="btn ghost" id="shop">道具商店</button><button class="btn ghost" id="bk">成語書</button></div>
+    ${bookAd()}`; bindStores(ui);
   ui.querySelectorAll('.items .item').forEach(b=>{ b.onclick=()=>toast(`${ITEMS[b.dataset.item].name}：${ITEMS[b.dataset.item].note}`); });
   ui.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{ S.tab=b.dataset.k; save(); SND.tap(); home(); });
   ui.querySelectorAll('#heroes button').forEach(b=>b.onclick=()=>{ S.hero=b.dataset.k; save(); SND.tap(); home(); });
