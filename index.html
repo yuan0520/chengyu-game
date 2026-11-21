@@ -421,8 +421,9 @@ function setChapter(k){ CH=OPEN_CH.find(c=>c.key===k)||OPEN_CH[0]; LEVELS=CH.sto
 /* ---------- 書本解鎖：第一輯免費；其他輯用書中「遊戲密語」解鎖 ---------- */
 const BUY_URL='promo/#buy', FREE_CH=3;
 const STORES=[['樂天 Kobo','https://www.kobo.com/tw/zh/search?query=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84','#BF0000'],['Pubu 電子書城','https://www.pubu.com.tw/search?q=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84','#2B7BD6'],['Amazon Kindle（海外）','https://www.amazon.com/s?k=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84&i=digital-text','#232F3E']];
-function storeBtns(tag){ return `<div style="display:flex;gap:8px;flex-wrap:wrap">${STORES.map(([n,u,c])=>`<a class="btn" href="${u}" target="_blank" rel="noopener" data-store="${n}" data-tag="${tag}" style="background:${c};color:#fff;text-decoration:none;padding:8px 14px;font-size:15px">📖 ${n}</a>`).join('')}</div>`; }
-function bindStores(root){ root.querySelectorAll('[data-store]').forEach(a=>a.onclick=()=>{ try{ gcEvent('點購書/'+a.dataset.store+'/'+a.dataset.tag); }catch(e){} }); }
+const VOL_LINKS={"1": ["https://www.kobo.com/tw/zh/ebook/0TGGjAYKMj6hQx2yG30TfQ", "https://www.pubu.com.tw/ebook/709396"], "2": ["https://www.kobo.com/tw/zh/ebook/rJYcy9MZgjCthcWkTnhI0w", "https://www.pubu.com.tw/ebook/709398"], "3": ["https://www.kobo.com/tw/zh/ebook/cvQFO6JB5DeF6AifY7U6Sw", "https://www.pubu.com.tw/ebook/709399"], "4": ["https://www.kobo.com/tw/zh/ebook/H8IHSLSf2D27iPE1qAc5WA", "https://www.pubu.com.tw/ebook/709401"], "5": ["https://www.kobo.com/tw/zh/ebook/rjZ4sIFQmjSW5Kv3DMZFYA", "https://www.pubu.com.tw/ebook/709402"], "6": ["https://www.kobo.com/tw/zh/ebook/PNDfmSuk_T-INbYAf_g-3g", "https://www.pubu.com.tw/ebook/709403"], "7": ["https://www.kobo.com/tw/zh/ebook/bibSj-M43zGzkQLwOFyJOg", "https://www.pubu.com.tw/ebook/709404"], "8": ["https://www.kobo.com/tw/zh/ebook/DO6KKFp18TiLXf4d2huTJQ", "https://www.pubu.com.tw/ebook/709406"], "9": ["https://www.kobo.com/tw/zh/ebook/CH_eph2GjzKu-3n0-ioOnQ", "https://www.pubu.com.tw/ebook/709407"], "10": ["https://www.kobo.com/tw/zh/ebook/QMSwwZmGmj2NVcLFOACfhA", "https://www.pubu.com.tw/ebook/709408"], "11": ["https://www.kobo.com/tw/zh/ebook/r_XfEL-ctDWFOPApqrQskQ", "https://www.pubu.com.tw/ebook/709409"], "12": ["https://www.kobo.com/tw/zh/search?query=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84", "https://www.pubu.com.tw/ebook/709410"], "13": ["https://www.kobo.com/tw/zh/ebook/Qgu8LojdvzKERiGqOx9lLA", "https://www.pubu.com.tw/ebook/709411"], "14": ["https://www.kobo.com/tw/zh/ebook/Wj1uQo7D0jq4Hh_O47l1Zg", "https://www.pubu.com.tw/ebook/709435"], "15": ["https://www.kobo.com/tw/zh/search?query=%E6%88%90%E8%AA%9E%E5%8E%9F%E4%BE%86%E6%98%AF%E9%80%99%E6%A8%A3%E4%BE%86%E7%9A%84", "https://www.pubu.com.tw/ebook/709436"]};
+function storeBtns(tag,vol){ const VL=vol&&VOL_LINKS[vol]; return `<div style="display:flex;gap:8px;flex-wrap:wrap">${STORES.map(([n,u,c],k)=>[n,(VL&&k<2&&VL[k].includes('/ebook/'))?VL[k]:u,c]).map(([n,u,c])=>`<a class="btn" href="${u}" target="_blank" rel="noopener" data-store="${n}" data-tag="${tag}" style="background:${c};color:#fff;text-decoration:none;padding:8px 14px;font-size:15px">📖 ${n}</a>`).join('')}</div>`; }
+function bindStores(root){ root.querySelectorAll('[data-store]').forEach(a=>a.onclick=()=>{ try{ gcEvent('點購書/'+a.dataset.store+'/'+a.dataset.tag); gcEvent('點購書/全部'); gcEvent('點購書/遊戲'); }catch(e){} }); }
 /* ---------- 家長成績單：一張可存圖、可分享的學習成果卡 ---------- */
 function parentCard(){
   const seen=new Set(), got=[];
@@ -489,7 +490,7 @@ function dailyOpen(){ const {ans,opts}=dailyQ(); const bk=Math.ceil(ans.e/4);
     m.querySelector('#dqr').innerHTML=`<p style="margin:0 0 6px"><b>${ok?'答對了！+20 銅錢 🎉':'差一點！正確答案是「'+esc(ans.w)+'」'}</b>　${S.daily.streak>1?'🔥 連續 '+S.daily.streak+' 天':''}</p>
       ${ans.x?`<p class="small" style="margin:0 0 8px">例句：${esc(ans.x)}</p>`:''}
       <p class="small" style="margin:0 0 8px">📚 這個成語的漫畫故事在《成語原來是這樣來的》第${bnum(bk)}輯</p>
-      ${storeBtns('每日挑戰')}<button class="btn" id="dqx" style="margin-top:10px;width:100%">回到遊戲</button>`;
+      ${storeBtns('每日挑戰',bk)}<button class="btn" id="dqx" style="margin-top:10px;width:100%">回到遊戲</button>`;
     bindStores(m); m.querySelector('#dqx').onclick=()=>{ m.remove(); home(); };
   });
   m.onclick=e=>{ if(e.target===m) m.remove(); };
@@ -1360,8 +1361,10 @@ function level(i){ try{ if(i===0) gcEvent('進入章節/'+CH.title); }catch(e){}
       <div class="listen fx" style="animation-delay:1.9s"><button id="play" aria-label="播放朗讀">▶</button><span>聽「${I.w}」的完整故事朗讀</span></div>
       <button class="btn ghost fx" id="bonus" style="animation-delay:2s">加分題：再答 2 題（每題 +10 銅錢）</button><div id="bonusBox"></div>
       <button class="link fx" id="cm" style="animation-delay:2s;text-align:left">看原版四格漫畫</button><div id="comic"></div>
+      <div class="fx" style="animation-delay:2.05s;background:#FFF1D6;border:2px solid #F2C9A8;border-radius:14px;padding:10px 12px"><p class="small" style="margin:0 0 6px">📚「${I.w}」的完整漫畫和成語卡，在《成語原來是這樣來的》第${bnum(bookOf(L.id))}輯</p>${storeBtns('過關',bookOf(L.id))}</div>
       <div class="row fx" style="justify-content:space-between;animation-delay:2.1s"><button class="btn ghost" id="again">再玩一次</button><button class="btn" id="next">${last?'回地圖，前往終點':'下一站'}</button></div>`;
     const ls=document.getElementById('lsay'); if(ls) ls.onclick=()=>{ const o=S.tts; S.tts=true; speak(L.lesson.text+(L.lesson.next?'。接下來，'+L.lesson.next:'')); S.tts=o; };
+    bindStores(qb);
     qb.querySelector('.qh').innerHTML='';
     if(!RM){ setTimeout(()=>SND.stamp(),950); [0,1,2].forEach(k=>{ if(k<st) setTimeout(()=>SND.star(k),(1.3+k*.25)*1000); }); }
     setTimeout(()=>{ if(st===3) giveItem('bag'); if(firstClear) setTimeout(()=>giveItem(['slip','mirror','shield','glass','flag','tally','seal','bag'][i%8]),st===3?900:0); },2300);
@@ -1638,7 +1641,7 @@ function cover(){
 <div class="cl" style="top:30%;transform:scale(.7);animation-duration:62s;animation-delay:-38s"></div>
 <div class="cl" style="top:52%;animation-duration:54s;animation-delay:-25s;opacity:.8"></div>
 <div class="bird" style="top:18%;animation-duration:19s"></div><div class="bird" style="top:22%;animation-duration:19s;animation-delay:-.6s;margin-left:30px"></div><div class="bird" style="top:40%;animation-duration:27s;animation-delay:-9s"></div>
-<header><span class="tag">Dr. Yuan．成語有聲漫畫</span>
+<header><span class="tag">斑斑工作室．成語原來是這樣來的</span>
 <h1><span class="row">${letters(T1,0)}</span><span class="row">${letters(T2,5)}</span></h1>
 <span class="rib">時空冒險闖關遊戲</span></header>
 <div class="stage" id="tstage"><div class="book" id="tbook">${COVER_SLIDES.map(([f],i)=>`<img src="img/cover/${f}.jpg" alt="" ${i?'loading="lazy"':''}>`).join('')}<span class="cap" id="tcap"></span></div></div>
